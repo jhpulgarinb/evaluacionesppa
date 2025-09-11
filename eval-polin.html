@@ -614,14 +614,25 @@
         // Almacenamiento local de registros
         let registrosLocales = JSON.parse(localStorage.getItem('registrosPolinizacion')) || [];
 
+        // Almacenamiento para campos persistentes
+        let camposPersistentes = JSON.parse(localStorage.getItem('camposPersistentesPolinizacion')) || {};
+
         // Inicializar la pagina
         document.addEventListener('DOMContentLoaded', function() {
-            // CÃ³digo para inicializar la fecha correctamente
+            // Código para inicializar la fecha correctamente
             const today = new Date();
             const yyyy = today.getFullYear();
             const mm = String(today.getMonth() + 1).padStart(2, '0');
             const dd = String(today.getDate()).padStart(2, '0');
             document.getElementById('fecha').value = `${yyyy}-${mm}-${dd}`;
+
+            // Cargar valores persistentes si existen
+            if (Object.keys(camposPersistentes).length > 0) {
+                document.getElementById('finca').value = camposPersistentes.finca || '';
+                document.getElementById('evaluador').value = camposPersistentes.evaluador || '';
+                document.getElementById('codigo_operario').value = camposPersistentes.codigoOperario || '';
+                document.getElementById('centro_costo').value = camposPersistentes.centroCosto || '';
+            }
 
             actualizarContadorRegistros();
             calcularResultados();
@@ -629,6 +640,28 @@
                 mostrarMensaje('Hay ' + registrosLocales.length + ' registros pendientes de enviar a Base de datos. Haga clic en "Enviar a Base de datos" cuando tenga conexion.', 'loading');
             }
         });
+
+        // Guardar valores persistentes cuando cambian
+        document.getElementById('finca').addEventListener('change', function() {
+            guardarCampoPersistente('finca', this.value);
+        });
+
+        document.getElementById('evaluador').addEventListener('change', function() {
+            guardarCampoPersistente('evaluador', this.value);
+        });
+
+        document.getElementById('codigo_operario').addEventListener('change', function() {
+            guardarCampoPersistente('codigoOperario', this.value);
+        });
+
+        document.getElementById('centro_costo').addEventListener('change', function() {
+            guardarCampoPersistente('centroCosto', this.value);
+        });
+
+        function guardarCampoPersistente(campo, valor) {
+            camposPersistentes[campo] = valor;
+            localStorage.setItem('camposPersistentesPolinizacion', JSON.stringify(camposPersistentes));
+        }
 
         // Funcion para enviar datos a Base de datos (MEJORADA)
         async function enviarGoogleSheets() {
@@ -778,12 +811,12 @@
                 };
                 reader.onerror = function(error) {
                     console.error('Error al leer el archivo:', error);
-                    mostrarMensaje('Error al guardar la imagen. IntÃ©ntelo de nuevo.', 'error');
+                    mostrarMensaje('Error al guardar la imagen. Inténtelo de nuevo.', 'error');
                 };
             } else {
                 registrosLocales.push(datos);
                 localStorage.setItem('registrosPolinizacion', JSON.stringify(registrosLocales));
-                mostrarMensaje('Datos guardados localmente (sin imÃ¡genes).', 'success');
+                mostrarMensaje('Datos guardados localmente (sin imágenes).', 'success');
                 actualizarContadorRegistros();
                 limpiarFormulario();
             }
@@ -800,6 +833,15 @@
             document.getElementById('flor_polinizada').textContent = '0';
             document.getElementById('flor_no_polinizada').textContent = '0';
             document.getElementById('imagenes').value = '';
+
+            // Restaurar valores persistentes
+            if (Object.keys(camposPersistentes).length > 0) {
+                document.getElementById('finca').value = camposPersistentes.finca || '';
+                document.getElementById('evaluador').value = camposPersistentes.evaluador || '';
+                document.getElementById('codigo_operario').value = camposPersistentes.codigoOperario || '';
+                document.getElementById('centro_costo').value = camposPersistentes.centroCosto || '';
+            }
+
             calcularResultados();
         }
 

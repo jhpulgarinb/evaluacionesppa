@@ -164,7 +164,7 @@
             background-color: #f9f9f9;
         }
         .action-buttons button[type="submit"] { display: none; }
-        /* Estilos para el pie de pÃ¡gina */
+        /* Estilos para el pie de página */
         .footer {
             margin-top: 20px;
             padding-top: 10px;
@@ -212,7 +212,7 @@
         </div>
 
         <div class="form-group">
-            <label for="codigo-operario">CÃ³digo Operario:</label>
+            <label for="codigo-operario">Codigo Operario:</label>
             <input type="text" id="codigo-operario" name="codigo-operario" required>
         </div>
 
@@ -225,7 +225,7 @@
                 <option value="Bendicion">Bendicion</option>
             </select>
         </div>
-        
+
         <div class="form-group">
             <label for="centro-costo">Centro de Costo:</label>
             <input type="text" id="centro-costo" name="centro-costo" required>
@@ -235,12 +235,12 @@
             <label for="linea-evaluada">Linea Evaluada:</label>
             <input type="text" id="linea-evaluada" name="linea-evaluada" required>
         </div>
-        
+
         <div class="form-group">
             <label for="nro-palmas-linea">Nro. Palmas Linea (Ej: 50):</label>
             <input type="number" id="nro-palmas-linea" name="nro-palmas-linea" min="1" required oninput="generatePalms()">
         </div>
-        
+
         <div class="form-group">
             <label for="palmas-evaluadas">Palmas Evaluadas (generadas automaticamente):</label>
             <input type="text" id="palmas-evaluadas" name="palmas-evaluadas" readonly>
@@ -295,7 +295,7 @@
                 <button type="button" onclick="increment('abortos')">+</button>
             </div>
         </div>
-        
+
         <div class="form-group">
             <label for="observaciones">Observaciones:</label>
             <textarea id="observaciones" name="observaciones" rows="4"></textarea>
@@ -307,9 +307,9 @@
         </div>
 
         <div id="totalInflorescenciasDisplay">Total de Inflorescencias y Abortos: 0</div>
-        
+
         <button type="submit" style="display: none;">Calcular Porcentaje de Inflorescencias</button>
-        
+
         <div class="button-group">
             <button type="button" id="btn-guardar" onclick="guardarDatos()">
                 <i class="fas fa-save"></i>
@@ -374,6 +374,7 @@
 <script>
     const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyOlBu4QvqHWJ8ZQbci0Sw9W6E9vQjIFVMJ0X_D1CS_evueBL0gFufIGl1naw3zVcsysA/exec';
     let registrosLocales = JSON.parse(localStorage.getItem('inflorescenciaRecords')) || [];
+    let camposPersistentes = JSON.parse(localStorage.getItem('camposPersistentes')) || {};
 
     document.addEventListener('DOMContentLoaded', function() {
         const today = new Date();
@@ -381,12 +382,43 @@
         const mm = String(today.getMonth() + 1).padStart(2, '0');
         const dd = String(today.getDate()).padStart(2, '0');
         document.getElementById('fecha-captura').value = `${yyyy}-${mm}-${dd}`;
+
+        // Cargar valores persistentes si existen
+        if (Object.keys(camposPersistentes).length > 0) {
+            document.getElementById('evaluador').value = camposPersistentes.evaluador || '';
+            document.getElementById('codigo-operario').value = camposPersistentes.codigoOperario || '';
+            document.getElementById('finca').value = camposPersistentes.finca || '';
+            document.getElementById('centro-costo').value = camposPersistentes.centroCosto || '';
+        }
+
         actualizarContadorRegistros();
         updateTotalInflorescencias();
         if (registrosLocales.length > 0) {
             mostrarMensaje('Hay ' + registrosLocales.length + ' registros pendientes de enviar a Base de datos.', 'loading');
         }
     });
+
+    // Guardar valores persistentes cuando cambian
+    document.getElementById('evaluador').addEventListener('change', function() {
+        guardarCampoPersistente('evaluador', this.value);
+    });
+
+    document.getElementById('codigo-operario').addEventListener('change', function() {
+        guardarCampoPersistente('codigoOperario', this.value);
+    });
+
+    document.getElementById('finca').addEventListener('change', function() {
+        guardarCampoPersistente('finca', this.value);
+    });
+
+    document.getElementById('centro-costo').addEventListener('change', function() {
+        guardarCampoPersistente('centroCosto', this.value);
+    });
+
+    function guardarCampoPersistente(campo, valor) {
+        camposPersistentes[campo] = valor;
+        localStorage.setItem('camposPersistentes', JSON.stringify(camposPersistentes));
+    }
 
     function generatePalms() {
         const totalPalmasLinea = parseInt(document.getElementById('nro-palmas-linea').value);
@@ -405,11 +437,11 @@
     }
 
     function updateTotalInflorescencias() {
-        const racimos = parseInt(document.getElementById('racimos').value);
-        const masculinas = parseInt(document.getElementById('masculinas').value);
-        const femeninas = parseInt(document.getElementById('femeninas').value);
-        const androgenos = parseInt(document.getElementById('androgenos').value);
-        const abortos = parseInt(document.getElementById('abortos').value);
+        const racimos = parseInt(document.getElementById('racimos').value) || 0;
+        const masculinas = parseInt(document.getElementById('masculinas').value) || 0;
+        const femeninas = parseInt(document.getElementById('femeninas').value) || 0;
+        const androgenos = parseInt(document.getElementById('androgenos').value) || 0;
+        const abortos = parseInt(document.getElementById('abortos').value) || 0;
         const total = racimos + masculinas + femeninas + androgenos + abortos;
         document.getElementById('totalInflorescenciasDisplay').textContent = `Total de Inflorescencias: ${total}`;
     }
@@ -460,14 +492,14 @@
         };
     }
 
-    // FUNCIÃ“N DE GUARDAR CORREGIDA
+    // FUNCIÓN DE GUARDAR CORREGIDA
     function guardarDatos() {
         if (!validarFormulario()) return;
         const datos = obtenerDatosFormulario();
         const imagenes = document.getElementById('imagenes').files;
 
         if (imagenes.length > 0) {
-            const file = imagenes[0]; 
+            const file = imagenes[0];
             const reader = new FileReader();
             reader.readAsDataURL(file);
             reader.onload = function() {
@@ -481,12 +513,12 @@
             };
             reader.onerror = function(error) {
                 console.error('Error al leer el archivo:', error);
-                mostrarMensaje('Error al guardar la imagen. IntÃ©ntelo de nuevo.', 'error');
+                mostrarMensaje('Error al guardar la imagen. Inténtelo de nuevo.', 'error');
             };
         } else {
             registrosLocales.push(datos);
             localStorage.setItem('inflorescenciaRecords', JSON.stringify(registrosLocales));
-            mostrarMensaje('Datos guardados localmente (sin imÃ¡genes).', 'success');
+            mostrarMensaje('Datos guardados localmente (sin imágenes).', 'success');
             actualizarContadorRegistros();
             limpiarFormulario();
         }
@@ -506,6 +538,15 @@
         document.getElementById('femeninas').value = '0';
         document.getElementById('androgenos').value = '0';
         document.getElementById('abortos').value = '0';
+
+        // Restaurar valores persistentes
+        if (Object.keys(camposPersistentes).length > 0) {
+            document.getElementById('evaluador').value = camposPersistentes.evaluador || '';
+            document.getElementById('codigo-operario').value = camposPersistentes.codigoOperario || '';
+            document.getElementById('finca').value = camposPersistentes.finca || '';
+            document.getElementById('centro-costo').value = camposPersistentes.centroCosto || '';
+        }
+
         updateTotalInflorescencias();
     }
 
@@ -569,7 +610,7 @@
     }
 
     function eliminarRegistro(index) {
-        if (confirm('Â¿Esta seguro de que desea eliminar este registro?')) {
+        if (confirm('¿Esta seguro de que desea eliminar este registro?')) {
             registrosLocales.splice(index, 1);
             localStorage.setItem('inflorescenciaRecords', JSON.stringify(registrosLocales));
             mostrarRegistros();
@@ -616,8 +657,8 @@
             mostrarMensaje('Error al exportar a Excel: ' + error.message, 'error');
         }
     }
-    
-    // FUNCIÃ“N DE ENVIAR CORREGIDA
+
+    // FUNCIÓN DE ENVIAR CORREGIDA
     async function enviarGoogleSheets() {
         if (registrosLocales.length === 0) {
             mostrarMensaje('No hay registros pendientes para enviar', 'error');
@@ -671,34 +712,50 @@
         const abortos = parseInt(document.getElementById('abortos').value);
         const observaciones = document.getElementById('observaciones').value;
         const imagenes = document.getElementById('imagenes').files;
-        let imagenInfo = "No se adjuntaron imÃ¡genes.";
+        let imagenInfo = "No se adjuntaron imágenes.";
         if (imagenes.length > 0) {
             imagenInfo = `Se adjuntaron ${imagenes.length} imagen(es).`;
         }
-        
+
         const totalSumaFloresRacimosAbortos = racimos + masculinas + femeninas + androgenos + abortos;
-        const porcentaje = (palmasEvaluadasContador > 0) ? (totalSumaFloresRacimosAbortos / palmasEvaluadasContador) * 100 : 0;
-        
+        const porcentajeTotal = (palmasEvaluadasContador > 0) ? (palmasEvaluadasContador / totalSumaFloresRacimosAbortos) * 100 : 0;
+
+        // Calcular porcentajes individuales
+        const porcentajeRacimos = (palmasEvaluadasContador > 0) ? (palmasEvaluadasContador / racimos) * 100 : 0;
+        const porcentajeMasculinas = (palmasEvaluadasContador > 0) ? (palmasEvaluadasContador / masculinas) * 100 : 0;
+        const porcentajeFemeninas = (palmasEvaluadasContador > 0) ? (palmasEvaluadasContador / femeninas) * 100 : 0;
+        const porcentajeAndrogenos = (palmasEvaluadasContador > 0) ? (palmasEvaluadasContador / androgenos) * 100 : 0;
+        const porcentajeAbortos = (palmasEvaluadasContador > 0) ? (palmasEvaluadasContador / abortos) * 100 : 0;
+
         alert(`
-            Datos de la EvaluaciÃ³n:
+            Datos de la Evaluación:
             ---------------------
             Fecha de captura: ${fechaCaptura}
             Evaluador: ${evaluador}
-            CÃ³digo Operario: ${codigoOperario}
+            Código Operario: ${codigoOperario}
             Finca: ${finca}
             Centro de Costo: ${centroCosto}
-            LÃ­nea Evaluada: ${lineaEvaluada}
-            Nro. Palmas LÃ­nea: ${nroPalmasLinea}
+            Línea Evaluada: ${lineaEvaluada}
+            Nro. Palmas Línea: ${nroPalmasLinea}
             Palmas Evaluadas (total): ${palmasEvaluadasContador}
-            NÃºmeros de Palma: ${palmasSeleccionadas}
+            Números de Palma: ${palmasSeleccionadas}
+
             Resultados:
             ----------
+            Racimos: ${racimos} (${porcentajeRacimos.toFixed(2)}%)
+            Flores Masculinas: ${masculinas} (${porcentajeMasculinas.toFixed(2)}%)
+            Flores Femeninas: ${femeninas} (${porcentajeFemeninas.toFixed(2)}%)
+            Andrógenos: ${androgenos} (${porcentajeAndrogenos.toFixed(2)}%)
+            Abortos: ${abortos} (${porcentajeAbortos.toFixed(2)}%)
+
             Total de Inflorescencias: ${totalSumaFloresRacimosAbortos}
-            Porcentaje de Inflorescencias: ${porcentaje.toFixed(2)}%
+            Porcentaje Total de Inflorescencias: ${porcentajeTotal.toFixed(2)}%
+
             Observaciones:
             -------------
             ${observaciones || 'No hay observaciones.'}
-            ImÃ¡genes:
+
+            Imágenes:
             ---------
             ${imagenInfo}
         `);

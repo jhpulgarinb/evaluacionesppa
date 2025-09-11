@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evaluacion de Inflorescencias en Palma de Aceite</title>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            width: 100%;
+            max-width: 900px;
+            padding: 25px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 25px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        input[type="text"], input[type="number"], input[type="date"], select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        input[type="text"]:focus, input[type="number"]:focus, input[type="date"]:focus, select:focus, textarea:focus {
+            border-color: #2196F3;
+            outline: none;
+        }
+        .counter-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .counter-group button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            border-radius: 6px;
+            font-size: 18px;
+            transition: background-color 0.3s;
+        }
+        .counter-group button:hover {
+            background-color: #45a049;
+        }
+        .counter-input {
+            flex-grow: 1;
+            text-align: center;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+        #totalInflorescenciasDisplay {
+            margin-top: 15px;
+            padding: 15px;
+            background-color: #e9e9e9;
+            border-radius: 8px;
+            font-weight: bold;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 20px;
+            gap: 10px;
+        }
+        .button-group button {
+            padding: 15px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            color: white;
+            flex-grow: 1;
+            max-width: 100%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .button-group #btn-guardar { background-color: #4CAF50; }
+        .button-group #btn-limpiar { background-color: #007BFF; }
+        .button-group #btn-ver-registros { background-color: #ff9800; }
+        .button-group #btn-exportar { background-color: #00bcd4; }
+        .button-group #btn-ver-resumen { background-color: #9c27b0; }
+        .button-group #btn-enviar { background-color: #e91e63; }
+        .button-group button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        .button-group button i { margin-right: 8px; }
+        .records-count {
+            background-color: #d32f2f;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            margin-left: 8px;
+            min-width: 25px;
+            text-align: center;
+        }
+        .status-message {
+            padding: 12px;
+            border-radius: 6px;
+            margin: 15px 0;
+            text-align: center;
+            display: none;
+        }
+        .status-success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .status-error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .status-loading { background-color: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        .registros-container {
+            margin-top: 30px;
+            display: none;
+        }
+        .registros-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        .registros-table th, .registros-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        .registros-table th {
+            background-color: #f5f5f5;
+            font-weight: 600;
+        }
+        .registros-table tr:hover {
+            background-color: #f9f9f9;
+        }
+        .action-buttons button[type="submit"] { display: none; }
+        /* Estilos para el pie de página */
+        .footer {
+            margin-top: 20px;
+            padding-top: 10px;
+            border-top: 1px solid #ddd;
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+        }
+        .motto {
+            font-style: italic;
+            margin-bottom: 8px;
+        }
+        .footer-text {
+            font-size: 12px;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Evaluacion de Inflorescencias</h1>
+    <div id="statusMessage" class="status-message"></div>
+    <form id="evaluation-form">
+        <div class="form-group">
+            <label for="fecha-captura">Fecha de captura:</label>
+            <input type="date" id="fecha-captura" name="fecha-captura" required>
+        </div>
+
+        <div class="form-group">
+            <label for="evaluador">Evaluador:</label>
+            <select id="evaluador" name="evaluador" required>
+                <option value="">Seleccione un evaluador</option>
+                <option value="Hasby Stella Vasquez Pastrana">Hasby Stella Vasquez Pastrana</option>
+                <option value="Yeidis Rodriguez Casas">Yeidis Rodriguez Casas</option>
+                <option value="Dianis Estella torres Hernandez">Dianis Estella torres Hernandez</option>
+                <option value="Daniela Diaz Doria">Daniela Diaz Doria</option>
+                <option value="Aledys machado blanco">Aledys machado blanco</option>
+                <option value="Patricia Maria Sibaja Hurtado">Patricia Maria Sibaja Hurtado</option>
+                <option value="Milena Garcia Hinestroza">Milena Garcia Hinestroza</option>
+                <option value="Andi Luz Muriel">Andi Luz Muriel</option>
+                <option value="Luis Carlos Manjarrez">Luis Carlos Manjarrez</option>
+                <option value="Francisco Alvarez">Francisco Alvarez</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="codigo-operario">Código Operario:</label>
+            <input type="text" id="codigo-operario" name="codigo-operario" required>
+        </div>
+
+        <div class="form-group">
+            <label for="finca">Finca:</label>
+            <select id="finca" name="finca" required>
+                <option value="">Seleccione una finca</option>
+                <option value="Playa">Playa</option>
+                <option value="Plana">Plana</option>
+                <option value="Bendicion">Bendicion</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="centro-costo">Centro de Costo:</label>
+            <input type="text" id="centro-costo" name="centro-costo" required>
+        </div>
+
+        <div class="form-group">
+            <label for="linea-evaluada">Linea Evaluada:</label>
+            <input type="text" id="linea-evaluada" name="linea-evaluada" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="nro-palmas-linea">Nro. Palmas Linea (Ej: 50):</label>
+            <input type="number" id="nro-palmas-linea" name="nro-palmas-linea" min="1" required oninput="generatePalms()">
+        </div>
+        
+        <div class="form-group">
+            <label for="palmas-evaluadas">Palmas Evaluadas (generadas automaticamente):</label>
+            <input type="text" id="palmas-evaluadas" name="palmas-evaluadas" readonly>
+        </div>
+
+        <div class="form-group">
+            <label for="palmas-evaluadas-contador">Numero de Palmas Evaluadas (Total):</label>
+            <input type="number" id="palmas-evaluadas-contador" value="0" min="0" readonly>
+        </div>
+
+        <div class="form-group">
+            <label>Numero de Racimos:</label>
+            <div class="counter-group">
+                <button type="button" onclick="decrement('racimos')">-</button>
+                <input type="number" id="racimos" value="0" min="0" readonly onchange="updateTotalInflorescencias()">
+                <button type="button" onclick="increment('racimos')">+</button>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Numero de Flores Masculinas:</label>
+            <div class="counter-group">
+                <button type="button" onclick="decrement('masculinas')">-</button>
+                <input type="number" id="masculinas" value="0" min="0" readonly onchange="updateTotalInflorescencias()">
+                <button type="button" onclick="increment('masculinas')">+</button>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Numero de Flores Femeninas:</label>
+            <div class="counter-group">
+                <button type="button" onclick="decrement('femeninas')">-</button>
+                <input type="number" id="femeninas" value="0" min="0" readonly onchange="updateTotalInflorescencias()">
+                <button type="button" onclick="increment('femeninas')">+</button>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Numero de Androgenos:</label>
+            <div class="counter-group">
+                <button type="button" onclick="decrement('androgenos')">-</button>
+                <input type="number" id="androgenos" value="0" min="0" readonly onchange="updateTotalInflorescencias()">
+                <button type="button" onclick="increment('androgenos')">+</button>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Numero de Abortos:</label>
+            <div class="counter-group">
+                <button type="button" onclick="decrement('abortos')">-</button>
+                <input type="number" id="abortos" value="0" min="0" readonly onchange="updateTotalInflorescencias()">
+                <button type="button" onclick="increment('abortos')">+</button>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label for="observaciones">Observaciones:</label>
+            <textarea id="observaciones" name="observaciones" rows="4"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="imagenes">Subir Imagenes Fotograficas:</label>
+            <input type="file" id="imagenes" name="imagenes" accept="image/*" multiple>
+        </div>
+
+        <div id="totalInflorescenciasDisplay">Total de Inflorescencias y Abortos: 0</div>
+        
+        <button type="submit" style="display: none;">Calcular Porcentaje de Inflorescencias</button>
+        
+        <div class="button-group">
+            <button type="button" id="btn-guardar" onclick="guardarDatos()">
+                <i class="fas fa-save"></i>
+                Guardar
+            </button>
+            <button type="button" id="btn-limpiar" onclick="limpiarFormulario()">
+                <i class="fas fa-eraser"></i>
+                Limpiar
+            </button>
+            <button type="button" id="btn-ver-registros" onclick="mostrarRegistros()">
+                <i class="fas fa-list"></i>
+                Ver Registros
+                <span id="registrosCount" class="records-count">0</span>
+            </button>
+            <button type="button" id="btn-exportar" onclick="exportarExcel()">
+                <i class="fas fa-file-excel"></i>
+                Exportar a Excel
+            </button>
+            <button type="button" id="btn-ver-resumen" onclick="mostrarResumen()">
+                <i class="fas fa-info-circle"></i>
+                Ver Resumen
+            </button>
+            <button type="button" id="btn-enviar" onclick="enviarGoogleSheets()">
+                <i class="fab fa-google"></i>
+                Enviar a Base de Datos
+            </button>
+        </div>
+    </form>
+
+    <div id="registrosContainer" class="registros-container">
+        <h2>Registros Guardados</h2>
+        <table class="registros-table">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Evaluador</th>
+                    <th>Finca</th>
+                    <th>Linea</th>
+                    <th>Racimos</th>
+                    <th>Masculinas</th>
+                    <th>Femeninas</th>
+                    <th>Androgenos</th>
+                    <th>Abortos</th>
+                    <th>Observaciones</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="registrosTableBody">
+                </tbody>
+        </table>
+    </div>
+<div class="footer">
+    <p class="motto">
+            "Trabajar en equipo con eficiencia y calidad son nuestros pilares, recordemos siempre: Lo que no se mide, no se puede controlar ni mejorar"
+    </p>
+    <p class="footer-text">
+            Creado por Jorge Hugo Pulgarin @ 2025 Todos los derechos reservados
+    </p>
+</div>
+</div>
+
+<script>
+    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyOlBu4QvqHWJ8ZQbci0Sw9W6E9vQjIFVMJ0X_D1CS_evueBL0gFufIGl1naw3zVcsysA/exec';
+    let registrosLocales = JSON.parse(localStorage.getItem('inflorescenciaRecords')) || [];
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const dd = String(today.getDate()).padStart(2, '0');
+        document.getElementById('fecha-captura').value = `${yyyy}-${mm}-${dd}`;
+        actualizarContadorRegistros();
+        updateTotalInflorescencias();
+        if (registrosLocales.length > 0) {
+            mostrarMensaje('Hay ' + registrosLocales.length + ' registros pendientes de enviar a Base de datos.', 'loading');
+        }
+    });
+
+    function generatePalms() {
+        const totalPalmasLinea = parseInt(document.getElementById('nro-palmas-linea').value);
+        if (isNaN(totalPalmasLinea) || totalPalmasLinea < 1) {
+            document.getElementById('palmas-evaluadas').value = '';
+            document.getElementById('palmas-evaluadas-contador').value = 0;
+            return;
+        }
+        const startPalm = Math.floor(Math.random() * 4) + 1;
+        const palmasEvaluadas = [];
+        for (let i = startPalm; i <= totalPalmasLinea; i += 5) {
+            palmasEvaluadas.push(i);
+        }
+        document.getElementById('palmas-evaluadas').value = palmasEvaluadas.join('-');
+        document.getElementById('palmas-evaluadas-contador').value = palmasEvaluadas.length;
+    }
+
+    function updateTotalInflorescencias() {
+        const racimos = parseInt(document.getElementById('racimos').value);
+        const masculinas = parseInt(document.getElementById('masculinas').value);
+        const femeninas = parseInt(document.getElementById('femeninas').value);
+        const androgenos = parseInt(document.getElementById('androgenos').value);
+        const abortos = parseInt(document.getElementById('abortos').value);
+        const total = racimos + masculinas + femeninas + androgenos + abortos;
+        document.getElementById('totalInflorescenciasDisplay').textContent = `Total de Inflorescencias: ${total}`;
+    }
+
+    function increment(id) {
+        const input = document.getElementById(id);
+        input.value = parseInt(input.value) + 1;
+        updateTotalInflorescencias();
+    }
+
+    function decrement(id) {
+        const input = document.getElementById(id);
+        if (parseInt(input.value) > 0) {
+            input.value = parseInt(input.value) - 1;
+        }
+        updateTotalInflorescencias();
+    }
+
+    function validarFormulario() {
+        const camposObligatorios = ['fecha-captura', 'evaluador', 'codigo-operario', 'finca', 'centro-costo', 'linea-evaluada', 'nro-palmas-linea'];
+        for (const id of camposObligatorios) {
+            if (!document.getElementById(id).value) {
+                mostrarMensaje('Por favor complete todos los campos obligatorios.', 'error');
+                return false;
+            }
+        }
+        return true;
+    }
+
+    function obtenerDatosFormulario() {
+        return {
+            fecha: document.getElementById('fecha-captura').value,
+            evaluador: document.getElementById('evaluador').value,
+            codigo_operario: document.getElementById('codigo-operario').value,
+            finca: document.getElementById('finca').value,
+            centro_costo: document.getElementById('centro-costo').value,
+            linea_evaluada: document.getElementById('linea-evaluada').value,
+            nro_palmas_linea: document.getElementById('nro-palmas-linea').value,
+            palmas_evaluadas: document.getElementById('palmas-evaluadas').value,
+            palmas_evaluadas_contador: parseInt(document.getElementById('palmas-evaluadas-contador').value),
+            racimos: parseInt(document.getElementById('racimos').value),
+            masculinas: parseInt(document.getElementById('masculinas').value),
+            femeninas: parseInt(document.getElementById('femeninas').value),
+            androgenos: parseInt(document.getElementById('androgenos').value),
+            abortos: parseInt(document.getElementById('abortos').value),
+            observaciones: document.getElementById('observaciones').value,
+            timestamp: new Date().toISOString()
+        };
+    }
+
+    // FUNCIÓN DE GUARDAR CORREGIDA
+    function guardarDatos() {
+        if (!validarFormulario()) return;
+        const datos = obtenerDatosFormulario();
+        const imagenes = document.getElementById('imagenes').files;
+
+        if (imagenes.length > 0) {
+            const file = imagenes[0]; 
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = function() {
+                datos.imagen = reader.result;
+                datos.imagenNombre = file.name;
+                registrosLocales.push(datos);
+                localStorage.setItem('inflorescenciaRecords', JSON.stringify(registrosLocales));
+                mostrarMensaje('Datos e imagen guardados localmente.', 'success');
+                actualizarContadorRegistros();
+                limpiarFormulario();
+            };
+            reader.onerror = function(error) {
+                console.error('Error al leer el archivo:', error);
+                mostrarMensaje('Error al guardar la imagen. Inténtelo de nuevo.', 'error');
+            };
+        } else {
+            registrosLocales.push(datos);
+            localStorage.setItem('inflorescenciaRecords', JSON.stringify(registrosLocales));
+            mostrarMensaje('Datos guardados localmente (sin imágenes).', 'success');
+            actualizarContadorRegistros();
+            limpiarFormulario();
+        }
+    }
+
+    function limpiarFormulario() {
+        document.getElementById('evaluation-form').reset();
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const dd = String(today.getDate()).padStart(2, '0');
+        document.getElementById('fecha-captura').value = `${yyyy}-${mm}-${dd}`;
+        document.getElementById('palmas-evaluadas').value = '';
+        document.getElementById('palmas-evaluadas-contador').value = 0;
+        document.getElementById('racimos').value = '0';
+        document.getElementById('masculinas').value = '0';
+        document.getElementById('femeninas').value = '0';
+        document.getElementById('androgenos').value = '0';
+        document.getElementById('abortos').value = '0';
+        updateTotalInflorescencias();
+    }
+
+    function actualizarContadorRegistros() {
+        document.getElementById('registrosCount').textContent = registrosLocales.length;
+    }
+
+    function mostrarMensaje(mensaje, tipo) {
+        const statusElement = document.getElementById('statusMessage');
+        statusElement.textContent = mensaje;
+        statusElement.className = 'status-message';
+        if (tipo === 'success') {
+            statusElement.classList.add('status-success');
+        } else if (tipo === 'error') {
+            statusElement.classList.add('status-error');
+        } else if (tipo === 'loading') {
+            statusElement.classList.add('status-loading');
+        }
+        statusElement.style.display = 'block';
+        if (tipo !== 'loading') {
+            setTimeout(() => {
+                statusElement.style.display = 'none';
+            }, 5000);
+        }
+    }
+
+    function mostrarRegistros() {
+        const container = document.getElementById('registrosContainer');
+        const tableBody = document.getElementById('registrosTableBody');
+        if (container.style.display === 'block') {
+            container.style.display = 'none';
+            return;
+        }
+        if (registrosLocales.length === 0) {
+            mostrarMensaje('No hay registros guardados', 'error');
+            return;
+        }
+        tableBody.innerHTML = '';
+        registrosLocales.forEach((registro, index) => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${registro.fecha}</td>
+                <td>${registro.evaluador}</td>
+                <td>${registro.finca}</td>
+                <td>${registro.linea_evaluada}</td>
+                <td>${registro.racimos}</td>
+                <td>${registro.masculinas}</td>
+                <td>${registro.femeninas}</td>
+                <td>${registro.androgenos}</td>
+                <td>${registro.abortos}</td>
+                <td>${registro.observaciones}</td>
+                <td>
+                    <button class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;" onclick="eliminarRegistro(${index})">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            `;
+            tableBody.appendChild(row);
+        });
+        container.style.display = 'block';
+    }
+
+    function eliminarRegistro(index) {
+        if (confirm('¿Esta seguro de que desea eliminar este registro?')) {
+            registrosLocales.splice(index, 1);
+            localStorage.setItem('inflorescenciaRecords', JSON.stringify(registrosLocales));
+            mostrarRegistros();
+            actualizarContadorRegistros();
+            mostrarMensaje('Registro eliminado correctamente', 'success');
+        }
+    }
+
+    function exportarExcel() {
+        if (registrosLocales.length === 0) {
+            mostrarMensaje('No hay registros para exportar', 'error');
+            return;
+        }
+        try {
+            const datosExportar = registrosLocales.map(registro => ({
+                'Fecha': registro.fecha,
+                'Evaluador': registro.evaluador,
+                'Codigo Operario': registro.codigo_operario,
+                'Finca': registro.finca,
+                'Centro de Costo': registro.centro_costo,
+                'Linea Evaluada': registro.linea_evaluada,
+                'Racimos': registro.racimos,
+                'Masculinas': registro.masculinas,
+                'Femeninas': registro.femeninas,
+                'Androgenos': registro.androgenos,
+                'Abortos': registro.abortos,
+                'Observaciones': registro.observaciones,
+                'Fecha Registro': new Date(registro.timestamp).toLocaleString()
+            }));
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.json_to_sheet(datosExportar);
+            const colWidths = [
+                { wch: 15 }, { wch: 25 }, { wch: 20 }, { wch: 15 }, { wch: 20 },
+                { wch: 15 }, { wch: 10 }, { wch: 15 }, { wch: 15 }, { wch: 15 },
+                { wch: 15 }, { wch: 30 }, { wch: 20 }
+            ];
+            ws['!cols'] = colWidths;
+            XLSX.utils.book_append_sheet(wb, ws, 'Registros Inflorescencia');
+            const fecha = new Date().toISOString().slice(0, 10);
+            XLSX.writeFile(wb, `Registros_Inflorescencia_${fecha}.xlsx`);
+            mostrarMensaje('Datos exportados correctamente a Excel', 'success');
+        } catch (error) {
+            console.error('Error al exportar a Excel:', error);
+            mostrarMensaje('Error al exportar a Excel: ' + error.message, 'error');
+        }
+    }
+    
+    // FUNCIÓN DE ENVIAR CORREGIDA
+    async function enviarGoogleSheets() {
+        if (registrosLocales.length === 0) {
+            mostrarMensaje('No hay registros pendientes para enviar', 'error');
+            return;
+        }
+
+        mostrarMensaje(`Enviando ${registrosLocales.length} registro(s) a la Base de Datos...`, 'loading');
+
+        try {
+            const response = await fetch(GOOGLE_SCRIPT_URL, {
+                redirect: "follow",
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ records: registrosLocales })
+            });
+
+            if (!response.ok) {
+                throw new Error(`Error HTTP: ${response.status}`);
+            }
+            const result = await response.json();
+
+            if (result.result === 'success') {
+                registrosLocales = [];
+                localStorage.setItem('inflorescenciaRecords', JSON.stringify(registrosLocales));
+                actualizarContadorRegistros();
+                document.getElementById('registrosContainer').style.display = 'none';
+                mostrarMensaje(result.message, 'success');
+            } else {
+                throw new Error(result.message);
+            }
+        } catch (error) {
+            console.error('Error al enviar datos:', error);
+            mostrarMensaje('Error al enviar datos: ' + error.message, 'error');
+        }
+    }
+
+    function mostrarResumen() {
+        const fechaCaptura = document.getElementById('fecha-captura').value;
+        const evaluador = document.getElementById('evaluador').value;
+        const codigoOperario = document.getElementById('codigo-operario').value;
+        const finca = document.getElementById('finca').value;
+        const centroCosto = document.getElementById('centro-costo').value;
+        const lineaEvaluada = document.getElementById('linea-evaluada').value;
+        const nroPalmasLinea = parseInt(document.getElementById('nro-palmas-linea').value);
+        const palmasEvaluadasContador = parseInt(document.getElementById('palmas-evaluadas-contador').value);
+        const palmasSeleccionadas = document.getElementById('palmas-evaluadas').value;
+        const racimos = parseInt(document.getElementById('racimos').value);
+        const masculinas = parseInt(document.getElementById('masculinas').value);
+        const femeninas = parseInt(document.getElementById('femeninas').value);
+        const androgenos = parseInt(document.getElementById('androgenos').value);
+        const abortos = parseInt(document.getElementById('abortos').value);
+        const observaciones = document.getElementById('observaciones').value;
+        const imagenes = document.getElementById('imagenes').files;
+        let imagenInfo = "No se adjuntaron imágenes.";
+        if (imagenes.length > 0) {
+            imagenInfo = `Se adjuntaron ${imagenes.length} imagen(es).`;
+        }
+        
+        const totalSumaFloresRacimosAbortos = racimos + masculinas + femeninas + androgenos + abortos;
+        const porcentaje = (palmasEvaluadasContador > 0) ? (totalSumaFloresRacimosAbortos / palmasEvaluadasContador) * 100 : 0;
+        
+        alert(`
+            Datos de la Evaluación:
+            ---------------------
+            Fecha de captura: ${fechaCaptura}
+            Evaluador: ${evaluador}
+            Código Operario: ${codigoOperario}
+            Finca: ${finca}
+            Centro de Costo: ${centroCosto}
+            Línea Evaluada: ${lineaEvaluada}
+            Nro. Palmas Línea: ${nroPalmasLinea}
+            Palmas Evaluadas (total): ${palmasEvaluadasContador}
+            Números de Palma: ${palmasSeleccionadas}
+            Resultados:
+            ----------
+            Total de Inflorescencias: ${totalSumaFloresRacimosAbortos}
+            Porcentaje de Inflorescencias: ${porcentaje.toFixed(2)}%
+            Observaciones:
+            -------------
+            ${observaciones || 'No hay observaciones.'}
+            Imágenes:
+            ---------
+            ${imagenInfo}
+        `);
+    }
+
+    updateTotalInflorescencias();
+</script>
+
+</body>
+</html>

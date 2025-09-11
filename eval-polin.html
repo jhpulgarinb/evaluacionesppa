@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+    <title>
+        Evaluacion de Polinizacion
+    </title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            width: 100%;
+            max-width: 900px;
+        }
+        .header {
+            background: linear-gradient(90deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .form-container {
+            padding: 25px;
+        }
+        .form-section {
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eaeaea;
+        }
+        .form-title {
+            color: #4CAF50;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+        .form-title i {
+            margin-right: 10px;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border 0.3s;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #4CAF50;
+            box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+        }
+        .counter-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #f9f9f9;
+            border-radius: 8px;
+            padding: 5px;
+        }
+        .counter-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
+        }
+        .counter-btn:hover {
+            background: #45a049;
+        }
+        .counter-value {
+            font-size: 18px;
+            font-weight: 600;
+            min-width: 50px;
+            text-align: center;
+        }
+        .results-box {
+            background: #f1f8e9;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            margin-top: 10px;
+        }
+        .results-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #4CAF50;
+        }
+        .btn {
+            padding: 14px 25px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn i {
+            margin-right: 8px;
+        }
+        .btn-primary {
+            background: #4CAF50;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .btn-secondary {
+            background: #2196F3;
+            color: white;
+        }
+        .btn-secondary:hover {
+            background: #0b7dda;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .btn-danger {
+            background: #f44336;
+            color: white;
+        }
+        .btn-danger:hover {
+            background: #d32f2f;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .btn-warning {
+            background: #ff9800;
+            color: white;
+        }
+        .btn-warning:hover {
+            background: #f57c00;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .btn-info {
+            background: #00bcd4;
+            color: white;
+        }
+        .btn-info:hover {
+            background: #0097a7;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #777;
+            font-size: 14px;
+        }
+        .status-message {
+            padding: 12px;
+            border-radius: 6px;
+            margin: 15px 0;
+            text-align: center;
+            display: none;
+        }
+        .status-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .status-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .status-loading {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        .camera-container {
+            margin-top: 15px;
+            text-align: center;
+        }
+        .camera-preview {
+            width: 100%;
+            max-width: 400px;
+            border-radius: 8px;
+            border: 2px dashed #ccc;
+            display: none;
+        }
+        .camera-actions {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        .registros-container {
+            margin-top: 30px;
+            display: none;
+        }
+        .registros-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        .registros-table th, .registros-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        .registros-table th {
+            background-color: #f5f5f5;
+            font-weight: 600;
+        }
+        .registros-table tr:hover {
+            background-color: #f9f9f9;
+        }
+        .photo-thumbnail {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 90%;
+            max-height: 90%;
+        }
+        .modal-img {
+            max-width: 100%;
+            max-height: 80vh;
+        }
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            color: white;
+            font-size: 30px;
+            cursor: pointer;
+        }
+        .records-count {
+            background-color: #4CAF50;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 14px;
+            margin-left: 10px;
+        }
+        @media (max-width: 768px) {
+            .grid-2, .grid-3 {
+                grid-template-columns: 1fr;
+            }
+            .action-buttons {
+                flex-direction: column;
+            }
+            .registros-table {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>
+                <i class="fas fa-seedling"></i>
+                Evaluacion de Polinizacion
+            </h1>
+            <p>
+                Sistema de registro de la Aplicacion
+            </p>
+        </div>
+        <div class="form-container">
+            <div id="statusMessage"
+                class="status-message"></div>
+            <form id="pollination-form">
+                <div class="form-section">
+                    <h2 class="form-title">
+                        <i class="fas fa-info-circle"></i>
+                        Informacion General
+                    </h2>
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label for="fecha">Fecha</label>
+                            <input type="date"
+                                id="fecha"
+                                required>
+                        </div>
+                        <div class="form-group">
+                            <label for="finca">Finca</label>
+                            <select id="finca"
+                                required>
+                                <option value>
+                                    Seleccione una finca
+                                </option>
+                                <option value="Playa">Playa</option>
+                                <option value="Plana">Plana</option>
+                                <option value="Bendicion">Bendicion</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label for="evaluador">Evaluador</label>
+                            <select id="evaluador"
+                                required>
+                                <option value>
+                                    Seleccione un evaluador
+                                </option>
+                                <option value="Hasby Stella Vasquez Pastrana">
+                                    Hasby Stella Vasquez Pastrana
+                                </option>
+                                <option value="Yeidis Rodriguez Casas">
+                                    Yeidis Rodriguez Casas
+                                </option>
+                                <option value="Dianis Estella torres Hernandez">
+                                    Dianis Estella torres Hernandez
+                                </option>
+                                <option value="Daniela Diaz Doria">Daniela Diaz Doria</option>
+                                <option value="Aledys machado blanco">
+                                    Aledys machado blanco
+                                </option>
+                                <option value="Patricia Maria Sibaja Hurtado">
+                                    Patricia Maria Sibaja Hurtado
+                                </option>
+                                <option value="Milena Garcia Hinestroza">
+                                    Milena Garcia Hinestroza
+                                </option>
+                                <option value="Andi Luz Muriel">Andi Luz Muriel</option>
+                                <option value="Luis Carlos Manjarrez">
+                                    Luis Carlos Manjarrez
+                                </option>
+                                <option value="Francisco Alvarez">Francisco Alvarez</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="codigo_operario">Codigo de Operario</label>
+                            <input type="text"
+                                id="codigo_operario"
+                                required>
+                        </div>
+                    </div>
+                    <div class="grid-3">
+                        <div class="form-group">
+                            <label for="centro_costo">Centro de Costo</label>
+                            <input type="number"
+                                id="centro_costo"
+                                required>
+                        </div>
+                        <div class="form-group">
+                            <label for="linea_inicial">Linea Inicial</label>
+                            <input type="number"
+                                id="linea_inicial"
+                                required>
+                        </div>
+                        <div class="form-group">
+                            <label for="linea_final">Linea Final</label>
+                            <input type="number"
+                                id="linea_final"
+                                required>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-section">
+                    <h2 class="form-title">
+                        <i class="fas fa-tachometer-alt"></i>
+                        Contadores
+                    </h2>
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label>Flor Polinizada</label>
+                            <div class="counter-container">
+                                <button type="button"
+                                    class="counter-btn"
+                                    onclick="updateCounter('flor_polinizada', -1)">
+                                    -
+                                </button>
+                                <div class="counter-value"
+                                    id="flor_polinizada">
+                                    0
+                                </div>
+                                <button type="button"
+                                    class="counter-btn"
+                                    onclick="updateCounter('flor_polinizada', 1)">
+                                    +
+                                </button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Flor no Polinizada</label>
+                            <div class="counter-container">
+                                <button type="button"
+                                    class="counter-btn"
+                                    onclick="updateCounter('flor_no_polinizada', -1)">
+                                    -
+                                </button>
+                                <div class="counter-value"
+                                    id="flor_no_polinizada">
+                                    0
+                                </div>
+                                <button type="button"
+                                    class="counter-btn"
+                                    onclick="updateCounter('flor_no_polinizada', 1)">
+                                    +
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-section">
+                    <h2 class="form-title">
+                        <i class="fas fa-calculator"></i>
+                        Resultados
+                    </h2>
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <div class="results-box">
+                                <label>Total Flores</label>
+                                <div class="results-value"
+                                    id="total_flores">
+                                    0
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="results-box">
+                                <label>
+                                    Porcentaje de Polinizacion
+                                </label>
+                                <div class="results-value"
+                                    id="porcentaje_polinizacion">
+                                    0%
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-section">
+                    <h2 class="form-title">
+                        <i class="fas fa-camera"></i>
+                        Evidencia Fotografica
+                    </h2>
+                    <div class="form-group">
+                        <label for="imagenes">Subir Imagenes Fotograficas:</label>
+                        <input type="file" id="imagenes" name="imagenes" accept="image/*">
+                    </div>
+                </div>
+                <div class="form-section">
+                    <h2 class="form-title">
+                        <i class="fas fa-clipboard-list"></i>
+                        Observaciones
+                    </h2>
+                    <div class="form-group">
+                        <textarea id="observaciones"
+                            rows="3"
+                            placeholder="Agregue cualquier observacion relevante"></textarea>
+                    </div>
+                </div>
+                <div class="action-buttons">
+                    <button type="button"
+                        class="btn btn-primary"
+                        onclick="guardarDatos()">
+                        <i class="fas fa-save"></i>
+                        Guardar
+                    </button>
+                    <button type="button"
+                        class="btn btn-secondary"
+                        onclick="limpiarFormulario()">
+                        <i class="fas fa-eraser"></i>
+                        Limpiar
+                    </button>
+                    <button type="button"
+                        class="btn btn-warning"
+                        onclick="mostrarRegistros()">
+                        <i class="fas fa-list"></i>
+                        Ver Registros
+                        <span id="registrosCount"
+                            class="records-count">
+                            0
+                        </span>
+                    </button>
+                    <button type="button"
+                        class="btn btn-info"
+                        onclick="exportarExcel()">
+                        <i class="fas fa-file-excel"></i>
+                        Exportar a Excel
+                    </button>
+                    <button type="button"
+                        class="btn btn-danger"
+                        onclick="enviarGoogleSheets()">
+                        <i class="fab fa-google"></i>
+                        Enviar a Base de Datos
+                    </button>
+                </div>
+            </form>
+            <div id="registrosContainer"
+                class="registros-container">
+                <h2 class="form-title">
+                    <i class="fas fa-list"></i>
+                    Registros Guardados
+                </h2>
+                <div id="registrosList"
+                    class="registros-list">
+                    <table class="registros-table">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Finca</th>
+                                <th>Evaluador</th>
+                                <th>Codigo Operario</th>
+                                <th>Centro Costo</th>
+                                <th>Linea Inicial</th>
+                                <th>Linea Final</th>
+                                <th>Flor Polinizada</th>
+                                <th>Flor no Polinizada</th>
+                                <th>Total Flores</th>
+                                <th>% Polinizacion</th>
+                                <th>Observaciones</th>
+                                <th>Foto</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="registrosTableBody">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="footer">
+                <p class="motto">
+                    "Trabajar en equipo con eficiencia y calidad son nuestros pilares, recordemos siempre: Lo que no se mide, no se puede controlar ni mejorar"
+                </p>
+                <p class="footer-text">
+                    Creado por Jorge Hugo Pulgarin @ 2025 Todos los derechos reservados
+                </p>
+            </div>
+        </div>
+    </div>
+    <div id="fotoModal"
+        class="modal">
+        <span class="close-modal"
+            onclick="cerrarModal()">
+            &times;
+        </span>
+        <div class="modal-content">
+            <img id="modalFoto"
+                class="modal-img">
+        </div>
+    </div>
+    <script>
+        // URL de Google Apps Script - REEMPLAZA CON TU URL
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw13MYGKbaMv2p5Bh6hLJs0dd2AjKpOsrz4vR6BJVwaa29OfAMEYwb_nRJkOOyD_pRIsw/exec';
+
+        // Almacenamiento local de registros
+        let registrosLocales = JSON.parse(localStorage.getItem('registrosPolinizacion')) || [];
+
+        // Inicializar la pagina
+        document.addEventListener('DOMContentLoaded', function() {
+            // Código para inicializar la fecha correctamente
+            const today = new Date();
+            const yyyy = today.getFullYear();
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const dd = String(today.getDate()).padStart(2, '0');
+            document.getElementById('fecha').value = `${yyyy}-${mm}-${dd}`;
+
+            actualizarContadorRegistros();
+            calcularResultados();
+            if (registrosLocales.length > 0) {
+                mostrarMensaje('Hay ' + registrosLocales.length + ' registros pendientes de enviar a Base de datos. Haga clic en "Enviar a Base de datos" cuando tenga conexion.', 'loading');
+            }
+        });
+
+        // Funcion para enviar datos a Base de datos (MEJORADA)
+        async function enviarGoogleSheets() {
+            if (registrosLocales.length === 0) {
+                mostrarMensaje('No hay registros pendientes para enviar', 'error');
+                return;
+            }
+
+            mostrarMensaje('Enviando datos a Base de datos...', 'loading');
+
+            try {
+                const datosParaEnviar = {
+                    records: registrosLocales
+                };
+
+                const response = await fetch(GOOGLE_SCRIPT_URL, {
+                    redirect: "follow",
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'text/plain;charset=utf-8',
+                    },
+                    body: JSON.stringify(datosParaEnviar)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Error HTTP: ${response.status}`);
+                }
+
+                const result = await response.json();
+
+                if (result.result === 'success') {
+                    registrosLocales = [];
+                    localStorage.setItem('registrosPolinizacion', JSON.stringify(registrosLocales));
+                    actualizarContadorRegistros();
+                    document.getElementById('registrosContainer').style.display = 'none';
+                    mostrarMensaje(result.message, 'success');
+                } else {
+                    throw new Error(result.message);
+                }
+            } catch (error) {
+                console.error('Error al enviar datos:', error);
+                mostrarMensaje('Error al enviar datos: ' + error.message, 'error');
+            }
+        }
+
+        // Mostrar mensaje de estado
+        function mostrarMensaje(mensaje, tipo) {
+            const statusElement = document.getElementById('statusMessage');
+            statusElement.textContent = mensaje;
+            statusElement.className = 'status-message';
+
+            if (tipo === 'success') {
+                statusElement.classList.add('status-success');
+            } else if (tipo === 'error') {
+                statusElement.classList.add('status-error');
+            } else if (tipo === 'loading') {
+                statusElement.classList.add('status-loading');
+            }
+
+            statusElement.style.display = 'block';
+
+            if (tipo !== 'loading') {
+                setTimeout(() => {
+                    statusElement.style.display = 'none';
+                }, 5000);
+            }
+        }
+
+        // Actualizar contador de registros
+        function actualizarContadorRegistros() {
+            document.getElementById('registrosCount').textContent = registrosLocales.length;
+        }
+
+        // Funcion para actualizar contadores
+        function updateCounter(counterId, change) {
+            const counterElement = document.getElementById(counterId);
+            let value = parseInt(counterElement.textContent);
+            value += change;
+
+            if (value < 0) value = 0;
+
+            counterElement.textContent = value;
+            calcularResultados();
+        }
+
+        // Funcion para calcular resultados
+        function calcularResultados() {
+            const polinizadas = parseInt(document.getElementById('flor_polinizada').textContent);
+            const noPolinizadas = parseInt(document.getElementById('flor_no_polinizada').textContent);
+
+            const totalFlores = polinizadas + noPolinizadas;
+            const porcentaje = totalFlores > 0 ? ((polinizadas / totalFlores) * 100).toFixed(2) : 0;
+
+            document.getElementById('total_flores').textContent = totalFlores;
+            document.getElementById('porcentaje_polinizacion').textContent = `${porcentaje}%`;
+        }
+
+        // Funcion para validar formulario
+        function validarFormulario() {
+            const camposObligatorios = ['fecha', 'finca', 'evaluador', 'codigo_operario', 'centro_costo', 'linea_inicial', 'linea_final'];
+            for (const id of camposObligatorios) {
+                if (!document.getElementById(id).value) {
+                    mostrarMensaje('Por favor complete todos los campos obligatorios.', 'error');
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        // Funcion para obtener datos del formulario
+        function obtenerDatosFormulario() {
+            return {
+                fecha: document.getElementById('fecha').value,
+                finca: document.getElementById('finca').value,
+                evaluador: document.getElementById('evaluador').value,
+                codigo_operario: document.getElementById('codigo_operario').value,
+                centro_costo: document.getElementById('centro_costo').value,
+                linea_inicial: document.getElementById('linea_inicial').value,
+                linea_final: document.getElementById('linea_final').value,
+                flor_polinizada: document.getElementById('flor_polinizada').textContent,
+                flor_no_polinizada: document.getElementById('flor_no_polinizada').textContent,
+                total_flores: document.getElementById('total_flores').textContent,
+                porcentaje_polinizacion: document.getElementById('porcentaje_polinizacion').textContent,
+                observaciones: document.getElementById('observaciones').value,
+                timestamp: new Date().toISOString()
+            };
+        }
+
+        // Funcion para guardar datos localmente
+        function guardarDatos() {
+            if (!validarFormulario()) return;
+            const datos = obtenerDatosFormulario();
+            const imagenes = document.getElementById('imagenes').files;
+
+            if (imagenes.length > 0) {
+                const file = imagenes[0];
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = function() {
+                    datos.imagen = reader.result;
+                    datos.imagenNombre = file.name;
+                    registrosLocales.push(datos);
+                    localStorage.setItem('registrosPolinizacion', JSON.stringify(registrosLocales));
+                    mostrarMensaje('Datos e imagen guardados localmente.', 'success');
+                    actualizarContadorRegistros();
+                    limpiarFormulario();
+                };
+                reader.onerror = function(error) {
+                    console.error('Error al leer el archivo:', error);
+                    mostrarMensaje('Error al guardar la imagen. Inténtelo de nuevo.', 'error');
+                };
+            } else {
+                registrosLocales.push(datos);
+                localStorage.setItem('registrosPolinizacion', JSON.stringify(registrosLocales));
+                mostrarMensaje('Datos guardados localmente (sin imágenes).', 'success');
+                actualizarContadorRegistros();
+                limpiarFormulario();
+            }
+        }
+
+        // Funcion para limpiar formulario
+        function limpiarFormulario() {
+            document.getElementById('pollination-form').reset();
+            const today = new Date();
+            const yyyy = today.getFullYear();
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const dd = String(today.getDate()).padStart(2, '0');
+            document.getElementById('fecha').value = `${yyyy}-${mm}-${dd}`;
+            document.getElementById('flor_polinizada').textContent = '0';
+            document.getElementById('flor_no_polinizada').textContent = '0';
+            document.getElementById('imagenes').value = '';
+            calcularResultados();
+        }
+
+        // Funcion para mostrar registros
+        function mostrarRegistros() {
+            const container = document.getElementById('registrosContainer');
+            const tableBody = document.getElementById('registrosTableBody');
+
+            if (container.style.display === 'block') {
+                container.style.display = 'none';
+                return;
+            }
+
+            if (registrosLocales.length === 0) {
+                mostrarMensaje('No hay registros guardados', 'error');
+                return;
+            }
+
+            tableBody.innerHTML = '';
+            registrosLocales.forEach((registro, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${registro.fecha}</td>
+                    <td>${registro.finca}</td>
+                    <td>${registro.evaluador}</td>
+                    <td>${registro.codigo_operario}</td>
+                    <td>${registro.centro_costo}</td>
+                    <td>${registro.linea_inicial}</td>
+                    <td>${registro.linea_final}</td>
+                    <td>${registro.flor_polinizada}</td>
+                    <td>${registro.flor_no_polinizada}</td>
+                    <td>${registro.total_flores}</td>
+                    <td>${registro.porcentaje_polinizacion}</td>
+                    <td>${registro.observaciones}</td>
+                    <td>
+                        ${registro.imagen ?
+                            `<img src="${registro.imagen}" class="photo-thumbnail" onclick="verFoto('${registro.imagen}')">` :
+                            'Sin foto'}
+                    </td>
+                    <td>
+                        <button class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;" onclick="eliminarRegistro(${index})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+            container.style.display = 'block';
+        }
+
+        // Funcion para eliminar registro
+        function eliminarRegistro(index) {
+            if (confirm('Esta seguro de que desea eliminar este registro?')) {
+                registrosLocales.splice(index, 1);
+                localStorage.setItem('registrosPolinizacion', JSON.stringify(registrosLocales));
+                mostrarRegistros();
+                actualizarContadorRegistros();
+                mostrarMensaje('Registro eliminado correctamente', 'success');
+            }
+        }
+
+        // Funcion para exportar a Excel
+        function exportarExcel() {
+            if (registrosLocales.length === 0) {
+                mostrarMensaje('No hay registros para exportar', 'error');
+                return;
+            }
+
+            try {
+                const datosExportar = registrosLocales.map(registro => ({
+                    'Fecha': registro.fecha,
+                    'Finca': registro.finca,
+                    'Evaluador': registro.evaluador,
+                    'Codigo Operario': registro.codigo_operario,
+                    'Centro Costo': registro.centro_costo,
+                    'Linea Inicial': registro.linea_inicial,
+                    'Linea Final': registro.linea_final,
+                    'Flor Polinizada': registro.flor_polinizada,
+                    'Flor no Polinizada': registro.flor_no_polinizada,
+                    'Total Flores': registro.total_flores,
+                    'Porcentaje Polinizacion': registro.porcentaje_polinizacion,
+                    'Observaciones': registro.observaciones,
+                    'Tiene Foto': registro.imagen ? 'Si' : 'No',
+                    'Fecha Registro': new Date(registro.timestamp).toLocaleString()
+                }));
+
+                const wb = XLSX.utils.book_new();
+                const ws = XLSX.utils.json_to_sheet(datosExportar);
+                const colWidths = [
+                    { wch: 15 }, { wch: 15 }, { wch: 25 }, { wch: 15 },
+                    { wch: 15 }, { wch: 15 }, { wch: 15 }, { wch: 15 },
+                    { wch: 20 }, { wch: 15 }, { wch: 20 }, { wch: 30 },
+                    { wch: 10 }, { wch: 20 }
+                ];
+                ws['!cols'] = colWidths;
+                XLSX.utils.book_append_sheet(wb, ws, 'Registros Polinizacion');
+                const fecha = new Date().toISOString().slice(0, 10);
+                XLSX.writeFile(wb, `Registros_Polinizacion_${fecha}.xlsx`);
+                mostrarMensaje('Datos exportados correctamente a Excel', 'success');
+            } catch (error) {
+                console.error('Error al exportar a Excel:', error);
+                mostrarMensaje('Error al exportar a Excel: ' + error.message, 'error');
+            }
+        }
+
+        // Funciones para el modal de foto
+        function verFoto(urlFoto) {
+            document.getElementById('modalFoto').src = urlFoto;
+            document.getElementById('fotoModal').style.display = 'flex';
+        }
+
+        function cerrarModal() {
+            document.getElementById('fotoModal').style.display = 'none';
+        }
+
+        // Cerrar modal al hacer clic fuera de la imagen
+        window.onclick = function(event) {
+            const modal = document.getElementById('fotoModal');
+            if (event.target === modal) {
+                cerrarModal();
+            }
+        };
+    </script>
+</body>
+</html>

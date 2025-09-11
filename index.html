@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menú de Evaluaciones</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            width: 100%;
+            max-width: 600px;
+            padding: 25px;
+            text-align: center;
+        }
+        .header {
+            background: linear-gradient(90deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+        .header h1 {
+            margin-top: 0;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+        .header p {
+            margin: 0;
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .menu-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px 20px;
+            border-radius: 10px;
+            background-color: #f0f4f8;
+            color: #333;
+            text-decoration: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s, box-shadow 0.3s, background-color 0.3s;
+        }
+        .menu-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+            background-color: #e2e8f0;
+        }
+        .menu-item i {
+            font-size: 3rem;
+            color: #4CAF50;
+            margin-bottom: 15px;
+        }
+        .menu-item span {
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-align: center;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #777;
+            font-size: 14px;
+        }
+        .motto {
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>
+                <i class="fas fa-bars"></i>
+                Menú de Evaluaciones y Reportes
+            </h1>
+            <p>Selecciona el tipo de evaluación que deseas realizar</p>
+        </div>
+        <div class="menu-grid">
+            <a href="eval-polin.html" class="menu-item">
+                <i class="fas fa-seedling"></i>
+                <span>Evaluación de Polinización</span>
+            </a>
+            <a href="eval-despate.html" class="menu-item">
+                <i class="fas fa-cut"></i>
+                <span>Evaluación de Despate</span>
+            </a>
+            <a href="evaluacion-inflorescencias.html" class="menu-item">
+                <i class="fas fa-leaf"></i>
+                <span>Evaluación de Inflorescencias</span>
+            </a>
+            <a href="menu_insumos_labores.html" class="menu-item">
+                <i class="fas fa-leaf"></i>
+                <span>Sistema de Insumos y Labores</span>
+            </a>
+            <a href="manual.html" class="menu-item">
+                <i class="fas fa-book-open"></i>
+                <span>Manual de Procedimiento</span>
+            </a>
+        </div>
+        <div class="footer">
+            <p class="motto">
+                "Trabajar en equipo con eficiencia y calidad son nuestros pilares, recordemos siempre: Lo que no se mide, no se puede controlar ni mejorar"
+            </p>
+            <p class="footer-text">
+                Creado por Jorge Hugo Pulgarin @ 2025 Todos los derechos reservados
+            </p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual del Sistema de Insumos y Labores</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .manual-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            max-width: 900px;
+            width: 100%;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #1a202c;
+        }
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .header p {
+            font-size: 1.1rem;
+            color: #4a5568;
+        }
+        .section {
+            margin-bottom: 30px;
+        }
+        .section h2 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: #1C3F8A;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #1C3F8A;
+            padding-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .section ol {
+            list-style: none;
+            counter-reset: li;
+            padding-left: 0;
+        }
+        .section ol li {
+            position: relative;
+            padding-left: 2.5rem;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+        .section ol li::before {
+            content: "Paso " counter(li) ": ";
+            counter-increment: li;
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+            color: #1C3F8A;
+        }
+        .step-content {
+            margin-bottom: 20px;
+            padding-left: 2.5rem;
+        }
+        .step-content h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        .step-content ul {
+            list-style-type: disc;
+            padding-left: 20px;
+            color: #4a5568;
+        }
+        .step-content ul li {
+            margin-bottom: 5px;
+        }
+        .separator {
+            border: 0;
+            height: 1px;
+            background: #cbd5e0;
+            margin: 30px 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="manual-container">
+        <div class="header">
+            <h1><i class="fas fa-book"></i> Manual del Sistema de Insumos y Labores</h1>
+            <p>Guia de procedimientos para el registro de insumos y labores diarias.</p>
+        </div>
+
+        <div class="section">
+            <h2><i class="fas fa-clipboard-list"></i> Procedimiento de uso</h2>
+            <p class="text-gray-600 mb-6">Este manual describe el flujo de trabajo para el registro de insumos y labores diarias. Se debe seguir el proceso en el orden indicado para garantizar la precision de los datos.</p>
+
+            <div class="step-content">
+                <h3 class="font-bold text-lg mb-2"><i class="fas fa-box text-blue-800"></i> Registro de Entrega de Insumos</h3>
+                <p class="text-gray-600">Este es el primer paso del proceso. Se utiliza cuando se entrega un insumo a un operario.</p>
+                <ul class="list-disc pl-8 mt-2 text-gray-700">
+                    <li>Seleciona <strong>Entrega de Insumos</strong>.</li>
+                    <li>Completa los campos de <strong>Informacion General</strong>, como la Fecha, la Finca, el Responsable, el Codigo de Operario y el Insumo que se entrega.</li>
+                    <li>En la seccion de Cantidades, ingresa la <strong>Cantidad Entregada</strong> al operario.</li>
+                    <li>El sistema calculara el <strong>Consumo Total</strong>, y debes registrar la Labor a Realizar y cualquier Observacion pertinente.</li>
+                    <li>Haz clic en el boton <strong>"Guardar"</strong> para almacenar el registro localmente, o en <strong>"Enviar a Base de Datos"</strong> para enviarlo a la base de datos externa.</li>
+                </ul>
+            </div>
+
+            <hr class="separator">
+
+            <div class="step-content">
+                <h3 class="font-bold text-lg mb-2"><i class="fas fa-undo text-blue-800"></i> Registro de Devolucion de Insumos</h3>
+                <p class="text-gray-600">Este paso es opcional y se realiza si un operario devuelve una porcion del insumo que no utilizo.</p>
+                <ul class="list-disc pl-8 mt-2 text-gray-700">
+                    <li>Selecciona <strong>Devolucion de Insumos</strong>.</li>
+                    <li>En la seccion "Buscar Registro de Entrega", ingresa el <strong>Codigo de Operario</strong> y el <strong>Insumo</strong> que se esta devolviendo.</li>
+                    <li>Haz clic en el boton <strong>"Buscar Registro"</strong> para encontrar el registro de entrega inicial.</li>
+                    <li>Una vez que se muestre la informacion de la entrega, ingresa la <strong>Cantidad a Devolver</strong> en el campo correspondiente.</li>
+                    <li>El sistema recalculara automaticamente el <strong>Consumo Actualizado</strong>.</li>
+                    <li>Haz clic en <strong>"Guardar Devolucion"</strong> para actualizar el registro inicial y reflejar el consumo real del insumo.</li>
+                </ul>
+            </div>
+
+            <hr class="separator">
+
+            <div class="step-content">
+                <h3 class="font-bold text-lg mb-2"><i class="fas fa-check-double text-blue-800"></i> Reporte de Labores Diarias</h3>
+                <p class="text-gray-600">Este es el paso final para registrar el avance del trabajo del operario.</p>
+                <ul class="list-disc pl-8 mt-2 text-gray-700">
+                    <li>Selecciona <strong>Reporte de Labores</strong>.</li>
+                    <li>En la seccion de Datos del Operario y la Labor, ingresa el <strong>Codigo de Operario</strong> y la <strong>Labor</strong> que va a reportar.</li>
+                    <li>Puedes elegir entre "Nuevo Reporte" o "Buscar y Editar" un reporte existente.</li>
+                    <li>Completa la informacion detallada de la labor, incluyendo la Fecha, la Finca, el Responsable, las <strong>Palmas Visitadas</strong>, la <strong>Cantidad Realizada</strong> y el <strong>area Recorrida</strong>.</li>
+                    <li>Utiliza la seccion de <strong>Centros de Costo</strong> para agregar el detalle de la labor por cada centro de costo, si aplica.</li>
+                    <li>Haz clic en <strong>"Guardar"</strong> para almacenar los datos del reporte. Puedes ver un resumen o exportar el reporte a Excel.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

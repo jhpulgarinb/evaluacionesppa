@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="es">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport"
+			content="width=device-width, initial-scale=1.0">
+		<title>Reporte de Labores</title>
+		<script src="https://cdn.tailwindcss.com"></script>
+		<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+		<style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            width: 100%;
+            max-width: 900px;
+        }
+        .header {
+            background: linear-gradient(90deg, #1C3F8A 0%, #295BAA 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .form-container {
+            padding: 25px;
+        }
+        .form-section {
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eaeaea;
+        }
+        .form-title {
+            color: #1C3F8A;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+        .form-title i {
+            margin-right: 10px;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border 0.3s;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #1C3F8A;
+            box-shadow: 0 0 0 2px rgba(28, 63, 138, 0.2);
+        }
+        input[readonly], select[readonly] {
+            background-color: #e9ecef;
+            opacity: 0.8;
+        }
+        .btn {
+            padding: 14px 25px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn i {
+            margin-right: 8px;
+        }
+        .btn-primary {
+            background: #1C3F8A;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #295BAA;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .btn-secondary {
+            background: #2196F3;
+            color: white;
+        }
+        .btn-secondary:hover {
+            background: #0b7dda;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        .btn-danger:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        .btn-success:hover {
+            background: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+        .btn-warning:hover {
+            background: #e0a800;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .btn-info {
+            background: #17a2b8;
+            color: white;
+        }
+        .btn-info:hover {
+            background: #138496;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .btn-group {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .status-message {
+            padding: 12px;
+            border-radius: 6px;
+            margin: 15px 0;
+            text-align: center;
+            display: none;
+        }
+        .status-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .status-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .status-loading {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        .status-warning {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #777;
+            font-size: 14px;
+        }
+        .records-count {
+            background-color: #ff9800;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 14px;
+            margin-left: 10px;
+        }
+        .records-table-container {
+            margin-top: 20px;
+            display: none;
+        }
+        .records-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        .records-table th, .records-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        .records-table th {
+            background-color: #f5f5f5;
+            font-weight: 600;
+        }
+        .records-table tr:hover {
+            background-color: #f9f9f9;
+        }
+        .action-cell {
+            white-space: nowrap;
+        }
+        .action-cell .btn {
+            padding: 5px 10px;
+            font-size: 12px;
+            margin-right: 5px;
+        }
+        @media (max-width: 768px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+        /* Estilos del modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+            padding-top: 60px;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+	</head>
+	<body>
+		<div class="container">
+			<div class="header">
+				<h1>
+					<i class="fas fa-clipboard-list"></i>
+					Reporte de Labores
+				</h1>
+				<p>
+					Formulario para registrar el avance de las labores diarias
+				</p>
+			</div>
+
+
+			<div class="form-container">
+				<div id="statusMessage"
+					class="status-message"></div>
+
+
+				<form id="reporte-form">
+					<div class="form-section">
+						<h2 class="form-title">
+							<i class="fas fa-user"></i>
+							Datos del Operario y la Labor
+						</h2>
+						<div class="grid-2">
+							<div class="form-group">
+								<label for="codigo_operario">Codigo de Operario</label>
+								<input type="text"
+									id="codigo_operario"
+									required>
+							</div>
+							<div class="form-group">
+								<label for="labor">Labor</label>
+								<select id="labor"
+									required>
+									<option value>
+										Seleccione una labor
+									</option>
+								</select>
+							</div>
+						</div>
+						<div class="text-center mt-4 btn-group">
+							<button type="button"
+								class="btn btn-primary"
+								onclick="limpiarFormulario()">
+								<i class="fas fa-plus-circle"></i>
+								Nuevo Reporte
+							</button>
+							<button type="button"
+								class="btn btn-secondary"
+								onclick="buscarRegistro()">
+								<i class="fas fa-search"></i>
+								Buscar y Editar
+							</button>
+						</div>
+					</div>
+
+
+					<div id="encabezado-section"
+						class="form-section"
+						style="display: none;">
+						<h2 class="form-title">
+							<i class="fas fa-info-circle"></i>
+							Informacion General
+						</h2>
+						<div class="grid-2">
+							<div class="form-group">
+								<label for="fecha">Fecha</label>
+								<input type="date"
+									id="fecha"
+									required
+									readonly>
+							</div>
+							<div class="form-group">
+								<label for="finca">Finca</label>
+								<input type="text"
+									id="finca"
+									required
+									readonly>
+							</div>
+							<div class="form-group">
+								<label for="responsable">Responsable</label>
+								<input type="text"
+									id="responsable"
+									required
+									readonly>
+							</div>
+							<div class="form-group">
+								<label for="insumo">Insumo</label>
+								<input type="text"
+									id="insumo"
+									required>
+							</div>
+							<div class="form-group">
+								<label for="cantidad_consumo">Cantidad en Consumo</label>
+								<input type="number"
+									id="cantidad_consumo"
+									step="0.01"
+									min="0">
+							</div>
+							<div class="form-group">
+								<label for="linea_inicial">Linea Inicial</label>
+								<input type="number"
+									id="linea_inicial"
+									min="0">
+							</div>
+							<div class="form-group">
+								<label for="linea_final">Linea Final</label>
+								<input type="number"
+									id="linea_final"
+									min="0">
+							</div>
+						</div>
+					</div>
+
+
+					<div id="centros-costo-section"
+						class="form-section"
+						style="display: none;">
+						<h2 class="form-title">
+							<i class="fas fa-map-marker-alt"></i>
+							Centros de Costo
+						</h2>
+						<div class="grid-2">
+							<div class="form-group">
+								<label for="cc_centro_costo">Centro de Costo</label>
+								<input type="text"
+									id="cc_centro_costo">
+							</div>
+							<div class="form-group">
+								<label for="cc_palmas_visitadas">Palmas Visitadas</label>
+								<input type="number"
+									id="cc_palmas_visitadas"
+									min="0">
+							</div>
+							<div class="form-group">
+								<label for="cc_cantidad_realizada">Cantidad Realizada</label>
+								<input type="number"
+									id="cc_cantidad_realizada"
+									step="0.01"
+									min="0">
+							</div>
+							<div class="form-group">
+								<label for="cc_area_recorrida">
+									Area Recorrida (Hectareas)
+								</label>
+								<input type="number"
+									id="cc_area_recorrida"
+									step="0.01"
+									min="0">
+							</div>
+						</div>
+						<div class="text-center mt-4 btn-group">
+							<button type="button"
+								class="btn btn-info"
+								onclick="agregarFilaCentroCosto()">
+								<i class="fas fa-plus"></i>
+								Agregar Centro de Costo
+							</button>
+						</div>
+
+
+						<div class="records-table-container">
+							<h3 class="form-title">
+								Detalle de Centros de Costo
+							</h3>
+							<table class="records-table">
+								<thead>
+									<tr>
+										<th>Centro de Costo</th>
+										<th>Palmas Visitadas</th>
+										<th>Cantidad Realizada</th>
+										<th>Area Recorrida</th>
+										<th>Acciones</th>
+									</tr>
+								</thead>
+								<tbody id="ccTableBody"></tbody>
+								<tfoot>
+									<tr>
+										<th>Total:</th>
+										<th id="totalPalmasVisitadas">0</th>
+										<th id="totalCantidadRealizada">0</th>
+										<th id="totalAreaRecorrida">0</th>
+										<th></th>
+									</tr>
+								</tfoot>
+							</table>
+						</div>
+					</div>
+				</form>
+
+
+				<div class="action-buttons mt-4 btn-group">
+					<button type="button"
+						class="btn btn-primary"
+						onclick="guardarRegistro()">
+						<i class="fas fa-save"></i>
+						Guardar
+					</button>
+					<button type="button"
+						class="btn btn-secondary"
+						onclick="limpiarFormulario()">
+						<i class="fas fa-eraser"></i>
+						Limpiar
+					</button>
+					<button type="button"
+						class="btn btn-warning"
+						onclick="verRegistros()">
+						<i class="fas fa-list"></i>
+						Ver Registros
+						<span id="registrosCount"
+							class="records-count">
+							0
+						</span>
+					</button>
+					<button type="button"
+						class="btn btn-success"
+						onclick="exportarExcel()">
+						<i class="fas fa-file-excel"></i>
+						Exportar a Excel
+					</button>
+					<button type="button"
+						class="btn btn-danger"
+						onclick="enviarBaseDeDatos()">
+						<i class="fas fa-database"></i>
+						Enviar a Base de Datos
+					</button>
+					<button type="button"
+						class="btn btn-info"
+						onclick="verResumen()">
+						<i class="fas fa-chart-bar"></i>
+						Ver Resumen
+					</button>
+				</div>
+
+
+				<div id="recordsTableContainer"
+					class="records-table-container">
+					<h2 class="form-title">
+						<i class="fas fa-list"></i>
+						Registros Guardados
+					</h2>
+					<table class="records-table">
+						<thead>
+							<tr>
+								<th>ID</th>
+								<th>Fecha</th>
+								<th>Responsable</th>
+								<th>Labor</th>
+								<th>Acciones</th>
+							</tr>
+						</thead>
+						<tbody id="recordsTableBody"></tbody>
+					</table>
+				</div>
+
+
+				<div class="footer">
+					<p>
+						"Trabajar en equipo con eficiencia y calidad son nuestros pilares..."
+					</p>
+					<p class="footer-text">
+						Creado por Jorge Hugo Pulgarin @ 2025 Todos los derechos reservados
+					</p>
+				</div>
+			</div>
+		</div>
+
+
+		<div id="costoDetallesModal"
+			class="modal">
+			<div class="modal-content">
+				<span class="close"
+					onclick="cerrarModal()">
+					&times;
+				</span>
+				<h2 class="form-title">
+					Detalles de Centros de Costo
+				</h2>
+				<table class="records-table">
+					<thead>
+						<tr>
+							<th>Centro de Costo</th>
+							<th>Palmas Visitadas</th>
+							<th>Cantidad Realizada</th>
+							<th>Area Recorrida</th>
+						</tr>
+					</thead>
+					<tbody id="modalTableBody"></tbody>
+					<tfoot>
+						<tr>
+							<th>Total:</th>
+							<th id="modalTotalPalmas">0</th>
+							<th id="modalTotalCantidad">0</th>
+							<th id="modalTotalArea">0</th>
+						</tr>
+					</tfoot>
+				</table>
+			</div>
+		</div>
+
+
+		<div id="resumenModal"
+			class="modal">
+			<div class="modal-content">
+				<span class="close"
+					onclick="cerrarModalResumen()">
+					&times;
+				</span>
+				<h2 class="form-title">Resumen del Reporte</h2>
+				<div id="resumen-contenido">
+					<!-- El contenido del resumen se generara dinamicamente -->
+				</div>
+			</div>
+		</div>
+
+
+		<script>
+			const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwROOBEEutcV2c8FSe_QHIPz6BPLQwDwoMtig153o1WAGBaGN2PfLLEmicsUI3xUymlmw/exec';
+
+        let registrosLabores = [];
+        let idEdicion = null;
+        let centrosDeCosto = [];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            registrosLabores = JSON.parse(localStorage.getItem('registrosLabores')) || [];
+            cargarLabores();
+            actualizarContadorRegistros();
+
+            // Establecer fecha actual permanente
+            const fechaInput = document.getElementById('fecha');
+            const today = new Date();
+            const formattedDate = today.getFullYear() + '-' +
+                                 String(today.getMonth() + 1).padStart(2, '0') + '-' +
+                                 String(today.getDate()).padStart(2, '0');
+            fechaInput.value = formattedDate;
+            fechaInput.setAttribute('readonly', true);
+
+            // Mostrar la fecha actual en la consola para verificacion
+            console.log('Fecha establecida:', formattedDate);
+        });
+
+        // Funcion para cargar las labores unicas en el menu desplegable.
+        function cargarLabores() {
+            const registrosEntrega = JSON.parse(localStorage.getItem('registrosInsumos')) || [];
+            const laborSelect = document.getElementById('labor');
+            const laboresUnicas = [...new Set(registrosEntrega.map(registro => registro.labor_a_realizar))];
+
+            laborSelect.innerHTML = '<option value="">Seleccione una labor</option>';
+            laboresUnicas.forEach(labor => {
+                if (labor) {
+                    const option = document.createElement('option');
+                    option.value = labor;
+                    option.textContent = labor;
+                    laborSelect.appendChild(option);
+                }
+            });
+        }
+
+        // Funcion para obtener el consumo neto del insumo (entregas - devoluciones)
+        function obtenerConsumoNeto(codigoOperario, insumo) {
+            const registrosEntrega = JSON.parse(localStorage.getItem('registrosInsumos')) || [];
+            const registrosDevolucion = JSON.parse(localStorage.getItem('devolucionesInsumos')) || [];
+            let totalEntrega = 0;
+            let totalDevolucion = 0;
+
+            // Calcular el total de insumos entregados
+            for (const registro of registrosEntrega) {
+                if (registro.codigo_operario === codigoOperario && registro.insumo === insumo) {
+                    totalEntrega += parseFloat(registro.cantidad_entregada || 0);
+                }
+            }
+
+            // Calcular el total de insumos devueltos
+            for (const registro of registrosDevolucion) {
+                if (registro.codigo_operario === codigoOperario && registro.insumo === insumo) {
+                    totalDevolucion += parseFloat(registro.cantidad_devuelta || 0);
+                }
+            }
+
+            const consumoNeto = totalEntrega - totalDevolucion;
+            return consumoNeto > 0 ? consumoNeto.toFixed(2) : 0;
+        }
+
+        // Funcion para buscar un registro basado en el codigo de operario y la labor.
+        function buscarRegistro() {
+            const codigoOperario = document.getElementById('codigo_operario').value.trim();
+            const laborSeleccionada = document.getElementById('labor').value;
+            const insumoInput = document.getElementById('insumo');
+            const cantidadConsumoInput = document.getElementById('cantidad_consumo');
+            const fechaInput = document.getElementById('fecha');
+            const fincaInput = document.getElementById('finca');
+            const responsableInput = document.getElementById('responsable');
+
+            if (!codigoOperario || !laborSeleccionada) {
+                mostrarMensaje('Por favor, ingrese el Codigo de Operario y seleccione una Labor.', 'error');
+                ocultarCamposAdicionales();
+                return;
+            }
+
+            const registrosEntrega = JSON.parse(localStorage.getItem('registrosInsumos')) || [];
+            const registroEnEntrega = registrosEntrega.find(registro =>
+                registro.codigo_operario === codigoOperario && registro.labor_a_realizar === laborSeleccionada
+            );
+
+            if (registroEnEntrega) {
+                // Autocompletar los campos de Operario, Labor, Insumo, Fecha, Finca y Responsable
+                document.getElementById('codigo_operario').value = registroEnEntrega.codigo_operario;
+                document.getElementById('labor').value = registroEnEntrega.labor_a_realizar;
+                insumoInput.value = registroEnEntrega.insumo;
+                fechaInput.value = registroEnEntrega.fecha; // Fecha desde entrega_insumos
+                fincaInput.value = registroEnEntrega.finca;
+                responsableInput.value = registroEnEntrega.responsable;
+
+                // Hacer los campos de fecha, finca y responsable de solo lectura
+                fechaInput.readOnly = true;
+                fincaInput.readOnly = true;
+                responsableInput.readOnly = true;
+
+                // Calcular y mostrar el consumo neto desde los datos de insumos
+                const consumoNeto = obtenerConsumoNeto(codigoOperario, insumoInput.value);
+                cantidadConsumoInput.value = consumoNeto;
+                cantidadConsumoInput.readOnly = true;
+
+                mostrarMensaje('Datos de Entrega de Insumos cargados.', 'success');
+                document.getElementById('encabezado-section').style.display = 'block';
+                document.getElementById('centros-costo-section').style.display = 'block';
+
+                // Buscar si ya existe un reporte de labores para el mismo operario y labor
+                const registroEnLabores = registrosLabores.find(r => r.codigo_operario === codigoOperario && r.labor_a_realizar === laborSeleccionada);
+
+                if (registroEnLabores) {
+                    cargarDatosEnFormulario(registroEnLabores);
+                    mostrarMensaje('Reporte de labores existente cargado para edicion.', 'success');
+                } else {
+                    mostrarMensaje('No se encontro un reporte de labores existente. Puede crear uno nuevo.', 'info');
+                    // Limpiar el resto de campos del formulario para un nuevo registro
+                    document.getElementById('linea_inicial').value = '';
+                    document.getElementById('linea_final').value = '';
+                    centrosDeCosto = [];
+                    renderTablaCentrosCosto();
+                    idEdicion = null;
+                }
+            } else {
+                mostrarMensaje('No se encontro un registro de entrega de insumos para este operario y labor. Puede registrar un nuevo reporte.', 'warning');
+                document.getElementById('encabezado-section').style.display = 'block';
+                document.getElementById('centros-costo-section').style.display = 'block';
+            }
+        }
+
+        // Funcion para cargar los datos de un registro en el formulario.
+        function cargarDatosEnFormulario(registro) {
+            document.getElementById('codigo_operario').value = registro.codigo_operario || '';
+            document.getElementById('labor').value = registro.labor_a_realizar || '';
+            document.getElementById('fecha').value = registro.fecha || '';
+            document.getElementById('finca').value = registro.finca || '';
+            document.getElementById('responsable').value = registro.responsable || '';
+            document.getElementById('insumo').value = registro.insumo || '';
+            document.getElementById('cantidad_consumo').value = registro.cantidad_consumo || 0;
+            document.getElementById('linea_inicial').value = registro.linea_inicial || '';
+            document.getElementById('linea_final').value = registro.linea_final || '';
+
+            // Cargar los centros de costo si existen
+            if (registro.centros_costo && Array.isArray(registro.centros_costo)) {
+                centrosDeCosto = registro.centros_costo;
+            } else {
+                centrosDeCosto = [];
+            }
+            renderTablaCentrosCosto();
+
+            // Mostrar las secciones relevantes
+            document.getElementById('encabezado-section').style.display = 'block';
+            document.getElementById('centros-costo-section').style.display = 'block';
+            idEdicion = registro.ID;
+        }
+
+        // Funcion para limpiar el formulario y preparar un nuevo reporte.
+        function limpiarFormulario() {
+            document.getElementById('reporte-form').reset();
+            document.getElementById('encabezado-section').style.display = 'none';
+            document.getElementById('centros-costo-section').style.display = 'none';
+            centrosDeCosto = [];
+            renderTablaCentrosCosto();
+            idEdicion = null;
+
+            // Restablecer fecha actual permanente
+            const today = new Date();
+            const formattedDate = today.getFullYear() + '-' +
+                                 String(today.getMonth() + 1).padStart(2, '0') + '-' +
+                                 String(today.getDate()).padStart(2, '0');
+            document.getElementById('fecha').value = formattedDate;
+            document.getElementById('fecha').setAttribute('readonly', true);
+
+            mostrarMensaje('Formulario limpiado. Listo para un nuevo reporte.', 'success');
+        }
+
+        // Funcion para agregar una fila a la tabla de centros de costo.
+        function agregarFilaCentroCosto() {
+            const centroCosto = document.getElementById('cc_centro_costo').value.trim();
+            const palmasVisitadas = parseFloat(document.getElementById('cc_palmas_visitadas').value) || 0;
+            const cantidadRealizada = parseFloat(document.getElementById('cc_cantidad_realizada').value) || 0;
+            const areaRecorrida = parseFloat(document.getElementById('cc_area_recorrida').value) || 0;
+
+            if (!centroCosto) {
+                mostrarMensaje('Por favor, ingrese un Centro de Costo.', 'error');
+                return;
+            }
+
+            const nuevoCosto = {
+                centro_costo: centroCosto,
+                palmas_visitadas: palmasVisitadas,
+                cantidad_realizada: cantidadRealizada,
+                area_recorrida: areaRecorrida
+            };
+
+            centrosDeCosto.push(nuevoCosto);
+            renderTablaCentrosCosto();
+
+            // Limpiar los campos para agregar el siguiente
+            document.getElementById('cc_centro_costo').value = '';
+            document.getElementById('cc_palmas_visitadas').value = '';
+            document.getElementById('cc_cantidad_realizada').value = '';
+            document.getElementById('cc_area_recorrida').value = '';
+        }
+
+        // Funcion para renderizar la tabla de centros de costo
+        function renderTablaCentrosCosto() {
+            const ccTableBody = document.getElementById('ccTableBody');
+            ccTableBody.innerHTML = '';
+            let totalPalmas = 0;
+            let totalCantidad = 0;
+            let totalArea = 0;
+
+            centrosDeCosto.forEach((cc, index) => {
+                const newRow = ccTableBody.insertRow();
+                newRow.insertCell(0).textContent = cc.centro_costo;
+                newRow.insertCell(1).textContent = cc.palmas_visitadas;
+                newRow.insertCell(2).textContent = cc.cantidad_realizada.toFixed(2);
+                newRow.insertCell(3).textContent = cc.area_recorrida.toFixed(2);
+
+                const actionCell = newRow.insertCell(4);
+                const deleteButton = document.createElement('button');
+                deleteButton.type = 'button';
+                deleteButton.className = 'btn btn-danger';
+                deleteButton.innerHTML = '<i class="fas fa-trash"></i> Eliminar';
+                deleteButton.onclick = function() {
+                    eliminarFilaCentroCosto(index);
+                };
+                actionCell.appendChild(deleteButton);
+
+                totalPalmas += cc.palmas_visitadas;
+                totalCantidad += cc.cantidad_realizada;
+                totalArea += cc.area_recorrida;
+            });
+
+            document.getElementById('totalPalmasVisitadas').textContent = totalPalmas;
+            document.getElementById('totalCantidadRealizada').textContent = totalCantidad.toFixed(2);
+            document.getElementById('totalAreaRecorrida').textContent = totalArea.toFixed(2);
+        }
+
+        function eliminarFilaCentroCosto(index) {
+            centrosDeCosto.splice(index, 1);
+            renderTablaCentrosCosto();
+        }
+
+        // Funcion para guardar el registro en el localStorage.
+        function guardarRegistro() {
+            const registro = {
+                ID: idEdicion || Date.now().toString(),
+                codigo_operario: document.getElementById('codigo_operario').value,
+                labor_a_realizar: document.getElementById('labor').value,
+                fecha: document.getElementById('fecha').value,
+                finca: document.getElementById('finca').value,
+                responsable: document.getElementById('responsable').value,
+                insumo: document.getElementById('insumo').value,
+                cantidad_consumo: parseFloat(document.getElementById('cantidad_consumo').value) || 0,
+                linea_inicial: document.getElementById('linea_inicial').value,
+                linea_final: document.getElementById('linea_final').value,
+                centros_costo: centrosDeCosto
+            };
+
+            // Validar campos obligatorios
+            if (!registro.codigo_operario || !registro.labor_a_realizar || !registro.fecha ||
+                !registro.finca || !registro.responsable || !registro.insumo) {
+                mostrarMensaje('Por favor, complete todos los campos obligatorios.', 'error');
+                return;
+            }
+
+            if (idEdicion) {
+                // Editar registro existente
+                const index = registrosLabores.findIndex(r => r.ID === idEdicion);
+                if (index !== -1) {
+                    registrosLabores[index] = registro;
+                }
+            } else {
+                // Agregar nuevo registro
+                registrosLabores.push(registro);
+            }
+
+            localStorage.setItem('registrosLabores', JSON.stringify(registrosLabores));
+            mostrarMensaje('Registro guardado correctamente.', 'success');
+            actualizarContadorRegistros();
+        }
+
+        // Funcion para actualizar el contador de registros
+        function actualizarContadorRegistros() {
+            document.getElementById('registrosCount').textContent = registrosLabores.length;
+        }
+
+        // Funcion para ver los registros guardados.
+        function verRegistros() {
+            const recordsTableContainer = document.getElementById('recordsTableContainer');
+            const recordsTableBody = document.getElementById('recordsTableBody');
+            recordsTableBody.innerHTML = '';
+
+            if (registrosLabores.length > 0) {
+                registrosLabores.forEach(registro => {
+                    const newRow = recordsTableBody.insertRow();
+                    newRow.insertCell(0).textContent = registro.ID;
+                    newRow.insertCell(1).textContent = registro.fecha || 'N/A';
+                    newRow.insertCell(2).textContent = registro.responsable || 'N/A';
+                    newRow.insertCell(3).textContent = registro.labor_a_realizar || 'N/A';
+
+                    const actionCell = newRow.insertCell(4);
+                    actionCell.className = 'action-cell';
+
+                    // Boton Editar
+                    const editButton = document.createElement('button');
+                    editButton.type = 'button';
+                    editButton.className = 'btn btn-primary';
+                    editButton.innerHTML = '<i class="fas fa-edit"></i> Editar';
+                    editButton.onclick = function() {
+                        cargarDatosEnFormulario(registro);
+                        document.getElementById('recordsTableContainer').style.display = 'none';
+                    };
+                    actionCell.appendChild(editButton);
+
+                    // Boton Ver CC
+                    const viewButton = document.createElement('button');
+                    viewButton.type = 'button';
+                    viewButton.className = 'btn btn-info';
+                    viewButton.innerHTML = '<i class="fas fa-eye"></i> Ver CC';
+                    viewButton.onclick = function() {
+                        verDetallesCosto(registro.centros_costo || []);
+                    };
+                    actionCell.appendChild(viewButton);
+
+                    // Boton Eliminar
+                    const deleteButton = document.createElement('button');
+                    deleteButton.type = 'button';
+                    deleteButton.className = 'btn btn-danger';
+                    deleteButton.innerHTML = '<i class="fas fa-trash"></i> Eliminar';
+                    deleteButton.onclick = function() {
+                        eliminarRegistro(registro.ID);
+                    };
+                    actionCell.appendChild(deleteButton);
+                });
+                recordsTableContainer.style.display = 'block';
+            } else {
+                recordsTableContainer.style.display = 'none';
+                mostrarMensaje('No hay registros guardados.', 'info');
+            }
+        }
+
+        // Funcion para eliminar un registro.
+        function eliminarRegistro(id) {
+            if (confirm('�Esta seguro de que desea eliminar este registro?')) {
+                registrosLabores = registrosLabores.filter(registro => registro.ID !== id);
+                localStorage.setItem('registrosLabores', JSON.stringify(registrosLabores));
+                verRegistros();
+                actualizarContadorRegistros();
+                mostrarMensaje('Registro eliminado correctamente.', 'success');
+            }
+        }
+
+        // Funcion para ver los detalles de centros de costo en un modal
+        function verDetallesCosto(centros) {
+            const modal = document.getElementById('costoDetallesModal');
+            const modalTableBody = document.getElementById('modalTableBody');
+            modalTableBody.innerHTML = '';
+            let totalPalmas = 0;
+            let totalCantidad = 0;
+            let totalArea = 0;
+
+            if (centros && centros.length > 0) {
+                centros.forEach(cc => {
+                    const newRow = modalTableBody.insertRow();
+                    newRow.insertCell(0).textContent = cc.centro_costo;
+                    newRow.insertCell(1).textContent = cc.palmas_visitadas;
+                    newRow.insertCell(2).textContent = cc.cantidad_realizada.toFixed(2);
+                    newRow.insertCell(3).textContent = cc.area_recorrida.toFixed(2);
+
+                    totalPalmas += cc.palmas_visitadas;
+                    totalCantidad += cc.cantidad_realizada;
+                    totalArea += cc.area_recorrida;
+                });
+            } else {
+                const newRow = modalTableBody.insertRow();
+                const cell = newRow.insertCell(0);
+                cell.colSpan = 4;
+                cell.textContent = "No hay centros de costo registrados para este reporte.";
+                cell.style.textAlign = "center";
+            }
+
+            document.getElementById('modalTotalPalmas').textContent = totalPalmas;
+            document.getElementById('modalTotalCantidad').textContent = totalCantidad.toFixed(2);
+            document.getElementById('modalTotalArea').textContent = totalArea.toFixed(2);
+
+            modal.style.display = 'block';
+        }
+
+        // Funcion para cerrar el modal
+        function cerrarModal() {
+            document.getElementById('costoDetallesModal').style.display = 'none';
+        }
+
+        // Funcion para ver resumen del reporte en un modal
+        function verResumen() {
+            const resumenModal = document.getElementById('resumenModal');
+            const resumenContent = document.getElementById('resumen-contenido');
+            resumenContent.innerHTML = '';
+
+            if (registrosLabores.length === 0) {
+                resumenContent.innerHTML = '<p>No hay datos para generar un resumen.</p>';
+            } else {
+                let resumenHTML = '<h3>Resumen de Labores y Consumos</h3>';
+                const resumen = {};
+
+                registrosLabores.forEach(registro => {
+                    const key = `${registro.labor_a_realizar}-${registro.insumo || 'Sin Insumo'}`;
+                    if (!resumen[key]) {
+                        resumen[key] = {
+                            labor: registro.labor_a_realizar,
+                            insumo: registro.insumo || 'Sin Insumo',
+                            cantidad_consumo: 0,
+                            area_recorrida: 0,
+                            palmas_visitadas: 0,
+                            cantidad_realizada: 0
+                        };
+                    }
+                    resumen[key].cantidad_consumo += parseFloat(registro.cantidad_consumo || 0);
+
+                    // Verificar que centros_costo existe y es un array antes de iterar
+                    if (registro.centros_costo && Array.isArray(registro.centros_costo)) {
+                        registro.centros_costo.forEach(cc => {
+                            resumen[key].area_recorrida += parseFloat(cc.area_recorrida || 0);
+                            resumen[key].palmas_visitadas += parseFloat(cc.palmas_visitadas || 0);
+                            resumen[key].cantidad_realizada += parseFloat(cc.cantidad_realizada || 0);
+                        });
+                    }
+                });
+
+                resumenHTML += '<table class="records-table">';
+                resumenHTML += '<thead><tr><th>Labor</th><th>Insumo</th><th>Cantidad de Consumo</th><th>Palmas Visitadas</th><th>Cantidad Realizada</th><th>area Recorrida (Ha)</th></tr></thead>';
+                resumenHTML += '<tbody>';
+                for (const key in resumen) {
+                    const item = resumen[key];
+                    resumenHTML += `
+                        <tr>
+                            <td>${item.labor}</td>
+                            <td>${item.insumo}</td>
+                            <td>${item.cantidad_consumo.toFixed(2)}</td>
+                            <td>${item.palmas_visitadas}</td>
+                            <td>${item.cantidad_realizada.toFixed(2)}</td>
+                            <td>${item.area_recorrida.toFixed(2)}</td>
+                        </tr>
+                    `;
+                }
+                resumenHTML += '</tbody></table>';
+                resumenContent.innerHTML = resumenHTML;
+            }
+            resumenModal.style.display = 'block';
+        }
+
+        // Funcion para cerrar el modal de resumen
+        function cerrarModalResumen() {
+            document.getElementById('resumenModal').style.display = 'none';
+        }
+
+        // Funcion para exportar los registros a Excel.
+        function exportarExcel() {
+            if (registrosLabores.length === 0) {
+                mostrarMensaje('No hay registros para exportar.', 'warning');
+                return;
+            }
+
+            const datosParaHoja = registrosLabores.map(registro => {
+                const filaBase = {
+                    'ID': registro.ID,
+                    'Codigo de Operario': registro.codigo_operario,
+                    'Labor': registro.labor_a_realizar,
+                    'Fecha': registro.fecha,
+                    'Finca': registro.finca,
+                    'Responsable': registro.responsable,
+                    'Insumo': registro.insumo,
+                    'Cantidad de Consumo': registro.cantidad_consumo,
+                    'Linea Inicial': registro.linea_inicial,
+                    'Linea Final': registro.linea_final
+                };
+
+                // Agregar los centros de costo como columnas separadas
+                if (registro.centros_costo && Array.isArray(registro.centros_costo)) {
+                    registro.centros_costo.forEach((cc, index) => {
+                        filaBase[`Centro de Costo ${index + 1}`] = cc.centro_costo;
+                        filaBase[`Palmas Visitadas ${index + 1}`] = cc.palmas_visitadas;
+                        filaBase[`Cantidad Realizada ${index + 1}`] = cc.cantidad_realizada;
+                        filaBase[`area Recorrida (Ha) ${index + 1}`] = cc.area_recorrida;
+                    });
+                }
+                return filaBase;
+            });
+
+            const ws = XLSX.utils.json_to_sheet(datosParaHoja);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Reporte de Labores");
+            XLSX.writeFile(wb, "reporte_de_labores.xlsx");
+            mostrarMensaje('Datos exportados a Excel correctamente.', 'success');
+        }
+
+        // Funcion para enviar los datos a una Base de Datos (Google Sheets)
+        async function enviarBaseDeDatos() {
+            if (registrosLabores.length === 0) {
+                mostrarMensaje('No hay registros pendientes para enviar', 'error');
+                return;
+            }
+            mostrarMensaje('Enviando datos a Google Sheets...', 'loading');
+
+            try {
+                const datosParaEnviar = { records: registrosLabores };
+
+                const response = await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(datosParaEnviar),
+                    headers: {
+                        'Content-Type': 'text/plain;charset=utf-8',
+                    },
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Error HTTP: ${response.status}`);
+                }
+
+                const result = await response.json();
+
+                if (result.result === 'success') {
+                    registrosLabores = [];
+                    localStorage.setItem('registrosLabores', JSON.stringify(registrosLabores));
+                    actualizarContadorRegistros();
+                    document.getElementById('recordsTableContainer').style.display = 'none';
+                    mostrarMensaje(result.message, 'success');
+                } else {
+                    throw new Error(result.message);
+                }
+            } catch (error) {
+                console.error('Error al enviar datos:', error);
+                mostrarMensaje('Error al enviar datos: ' + error.message, 'error');
+            }
+        }
+
+        function mostrarMensaje(mensaje, tipo) {
+            const statusElement = document.getElementById('statusMessage');
+            statusElement.textContent = mensaje;
+            statusElement.className = 'status-message';
+
+            // Eliminar clases anteriores
+            statusElement.classList.remove('status-success', 'status-error', 'status-loading', 'status-warning');
+
+            // Agregar la clase correspondiente
+            if (tipo === 'success') {
+                statusElement.classList.add('status-success');
+            } else if (tipo === 'error') {
+                statusElement.classList.add('status-error');
+            } else if (tipo === 'loading') {
+                statusElement.classList.add('status-loading');
+            } else if (tipo === 'info') {
+                statusElement.classList.add('status-loading');
+            } else if (tipo === 'warning') {
+                statusElement.classList.add('status-warning');
+            }
+
+            statusElement.style.display = 'block';
+            if (tipo !== 'loading') {
+                setTimeout(() => {
+                    statusElement.style.display = 'none';
+                }, 5000);
+            }
+        }
+
+        function ocultarCamposAdicionales() {
+            document.getElementById('encabezado-section').style.display = 'none';
+            document.getElementById('centros-costo-section').style.display = 'none';
+        }
+
+        // Cerrar modales al hacer clic fuera de ellos
+        window.onclick = function(event) {
+            const costoModal = document.getElementById('costoDetallesModal');
+            const resumenModal = document.getElementById('resumenModal');
+
+            if (event.target == costoModal) {
+                costoModal.style.display = 'none';
+            }
+            if (event.target == resumenModal) {
+                resumenModal.style.display = 'none';
+            }
+        }
+		</script>
+	</body>
+</html>

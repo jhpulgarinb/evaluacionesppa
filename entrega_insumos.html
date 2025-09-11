@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="es">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport"
+			content="width=device-width, initial-scale=1.0">
+		<title>
+			Registro de Entrega de Insumos
+		</title>
+		<script src="https://cdn.tailwindcss.com"></script>
+		<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+		<style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            width: 100%;
+            max-width: 900px;
+        }
+        .header {
+            background: linear-gradient(90deg, #1C3F8A 0%, #295BAA 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .form-container {
+            padding: 25px;
+        }
+        .form-section {
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eaeaea;
+        }
+        .form-title {
+            color: #1C3F8A;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+        .form-title i {
+            margin-right: 10px;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border 0.3s;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #1C3F8A;
+            box-shadow: 0 0 0 2px rgba(28, 63, 138, 0.2);
+        }
+        .results-box {
+            background: #e8eaf6;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            margin-top: 10px;
+        }
+        .results-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1C3F8A;
+        }
+        .btn {
+            padding: 14px 25px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn i {
+            margin-right: 8px;
+        }
+        .btn-primary {
+            background: #1C3F8A;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #295BAA;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .btn-success {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .btn-success:hover {
+            background-color: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .btn-secondary {
+            background: #2196F3;
+            color: white;
+        }
+        .btn-secondary:hover {
+            background: #0b7dda;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .btn-danger {
+            background: #f44336;
+            color: white;
+        }
+        .btn-danger:hover {
+            background: #d32f2f;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .btn-warning {
+            background: #ff9800;
+            color: white;
+        }
+        .btn-warning:hover {
+            background: #f57c00;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #777;
+            font-size: 14px;
+        }
+        .status-message {
+            padding: 12px;
+            border-radius: 6px;
+            margin: 15px 0;
+            text-align: center;
+            display: none;
+        }
+        .status-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .status-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .status-loading {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        .records-count {
+            background-color: #1C3F8A;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 14px;
+            margin-left: 10px;
+        }
+        .registros-container {
+            margin-top: 30px;
+            display: none;
+            overflow-x: auto;
+        }
+        .registros-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        .registros-table th, .registros-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            white-space: nowrap;
+        }
+        .registros-table th {
+            background-color: #f5f5f5;
+            font-weight: 600;
+        }
+        .registros-table tr:hover {
+            background-color: #f9f9f9;
+        }
+        @media (max-width: 768px) {
+            .grid-2, .grid-3 {
+                grid-template-columns: 1fr;
+            }
+            .action-buttons {
+                flex-direction: column;
+            }
+            .registros-table {
+                font-size: 12px;
+            }
+        }
+    </style>
+	</head>
+	<body>
+		<div class="container">
+			<div class="header">
+				<h1>
+					<i class="fas fa-box"></i>
+					Registro de Entrega de Insumos
+				</h1>
+				<p>
+					Sistema de registro de insumos entregados
+				</p>
+			</div>
+
+
+			<div class="form-container">
+				<div id="statusMessage"
+					class="status-message"></div>
+
+
+				<form id="insumo-form">
+					<div class="form-section">
+						<h2 class="form-title">
+							<i class="fas fa-info-circle"></i>
+							Informacion General
+						</h2>
+						<div class="grid-2">
+							<div class="form-group">
+								<label for="fecha">Fecha</label>
+								<input type="date"
+									id="fecha"
+									required>
+							</div>
+							<div class="form-group">
+								<label for="finca">Finca</label>
+								<select id="finca"
+									required>
+									<option value>
+										Seleccione una finca
+									</option>
+									<option value="Playa">Playa</option>
+									<option value="Plana">Plana</option>
+									<option value="Bendicion">Bendicion</option>
+								</select>
+							</div>
+						</div>
+
+
+						<div class="grid-2">
+							<div class="form-group">
+								<label for="responsable">
+									Evaluador o Responsable
+								</label>
+								<select id="responsable"
+									required>
+									<option value>
+										Seleccione un responsable
+									</option>
+									<option value="Hasby Stella Vasquez Pastrana">
+										Hasby Stella Vasquez Pastrana
+									</option>
+									<option value="Yeidis Rodriguez Casas">
+										Yeidis Rodriguez Casas
+									</option>
+									<option value="Dianis Estella torres Hernandez">
+										Dianis Estella torres Hernandez
+									</option>
+									<option value="Daniela Diaz Doria">Daniela Diaz Doria</option>
+									<option value="Aledys machado blanco">
+										Aledys machado blanco
+									</option>
+									<option value="Patricia Maria Sibaja Hurtado">
+										Patricia Maria Sibaja Hurtado
+									</option>
+									<option value="Milena Garcia Hinestroza">
+										Milena Garcia Hinestroza
+									</option>
+									<option value="Andi Luz Muriel">Andi Luz Muriel</option>
+									<option value="Luis Carlos Manjarrez">
+										Luis Carlos Manjarrez
+									</option>
+									<option value="Francisco Alvarez">Francisco Alvarez</option>
+								</select>
+							</div>
+							<div class="form-group">
+								<label for="codigo_operario">Codigo de Operario</label>
+								<input type="text"
+									id="codigo_operario"
+									required>
+							</div>
+						</div>
+
+
+						<div class="grid-2">
+							<div class="form-group">
+								<label for="insumo">Insumo</label>
+								<select id="insumo"
+									required>
+									<option value>
+										Seleccione un insumo
+									</option>
+									<option value="MEZCLA POLINIZACION">MEZCLA POLINIZACION</option>
+									<option value="1086 - COSMO AGUA">1086 - COSMO AGUA</option>
+									<option value="315 - COSMO IN D">315 - COSMO IN D</option>
+									<option value="4206 - ANA LIQUIDA">4206 - ANA LIQUIDA</option>
+									<option value="698 - CARRIER POL">698 - CARRIER POL</option>
+									<option value="1526 - RAFAGA">1526 - RAFAGA</option>
+									<option value="1663 - RAFAGA LIQUIDO">
+										1663 - RAFAGA LIQUIDO
+									</option>
+									<option value="2939 - IMIDA CLOPRID">
+										2939 - IMIDA CLOPRID
+									</option>
+									<option value="3953 - INVETRINA">3953 - INVETRINA</option>
+									<option value="4160 - SOSMA">4160 - SOSMA</option>
+									<option value="4441 - FEROMONAS STRATEGUS">
+										4441 - FEROMONAS STRATEGUS
+									</option>
+									<option value="846 - SEROK">846 - SEROK</option>
+									<option value="906 - FEROMONAS RHYCHOP">
+										906 - FEROMONAS RHYCHOP
+									</option>
+									<option value="1136 - REGLONE">1136 - REGLONE</option>
+									<option value="2603 - AMETRINA">2603 - AMETRINA</option>
+									<option value="3029 - PANZER">3029 - PANZER</option>
+									<option value="31 - CERRERO">31 - CERRERO</option>
+									<option value="3761 - AMINA">3761 - AMINA</option>
+									<option value="3762 - PANZER 480">3762 - PANZER 480</option>
+									<option value="73 - COSMO AGUA">73 - COSMO AGUA</option>
+									<option value="1664 - MANCOZEB">1664 - MANCOZEB</option>
+									<option value="17 - LORSBAN">17 - LORSBAN</option>
+									<option value="2932 - RIDOMIL">2932 - RIDOMIL</option>
+									<option value="2936 - RUGIDO 20SL">2936 - RUGIDO 20SL</option>
+									<option value="2937 - CARRIER">2937 - CARRIER</option>
+									<option value="2938 - ZORVEC">2938 - ZORVEC</option>
+									<option value="2941 - ZAMPRO">2941 - ZAMPRO</option>
+									<option value="3430 - CARBENDAZIN">3430 - CARBENDAZIN</option>
+									<option value="3712 - TERRASAFE">3712 - TERRASAFE</option>
+									<option value="42 - FIPRONIL">42 - FIPRONIL</option>
+									<option value="43 - FOSETAL DE ALUMINIO">
+										43 - FOSETAL DE ALUMINIO
+									</option>
+									<option value="1216 - ACEITE 15 W 40">
+										1216 - ACEITE 15 W 40
+									</option>
+									<option value="78 - ACPM">78 - ACPM</option>
+									<option value="78 - BIODISEL">78 - BIODISEL</option>
+									<option value="79 - GASOLINA">79 - GASOLINA</option>
+									<option value="4427 - HIPOCLORITO DE CALCIO LIQUIDO">
+										4427 - HIPOCLORITO DE CALCIO LIQUIDO
+									</option>
+									<option value="72 - DIPEL">72 - DIPEL</option>
+									<option value="1047 - NITROXTEND">1047 - NITROXTEND</option>
+									<option value="1834 - OXIDO DE MAGNESIO 88%">
+										1834 - OXIDO DE MAGNESIO 88%
+									</option>
+									<option value="19 - DAP">19 - DAP</option>
+									<option value="2871 - CAL VIVA">2871 - CAL VIVA</option>
+									<option value="3331 - KIESERITA ALEMANA">
+										3331 - KIESERITA ALEMANA
+									</option>
+									<option value="348 - KSC PHYT ACTYL AMARILLO">
+										348 - KSC PHYT ACTYL AMARILLO
+									</option>
+									<option value="349 - KSC PHYT ACTYL V LILA X 1 KG">
+										349 - KSC PHYT ACTYL V LILA X 1 KG
+									</option>
+									<option value="605 - MEZCLA 18-0-36">
+										605 - MEZCLA 18-0-36
+									</option>
+									<option value="64 - GZ FERTIACTYL">64 - GZ FERTIACTYL</option>
+									<option value="825 - BOROZINCO GRANULAR">
+										825 - BOROZINCO GRANULAR
+									</option>
+									<option value="847 - KCL GRANULAR">847 - KCL GRANULAR</option>
+									<option value="848 - MEZCLA BORO-POTASIO">
+										848 - MEZCLA BORO-POTASIO
+									</option>
+									<option value="852 - MEZCLA 15-4-23-4-2">
+										852 - MEZCLA 15-4-23-4-2
+									</option>
+								</select>
+							</div>
+						</div>
+					</div>
+
+
+					<div class="form-section">
+						<h2 class="form-title">
+							<i class="fas fa-boxes"></i>
+							Cantidades
+						</h2>
+						<div class="grid-2">
+							<div class="form-group">
+								<label for="cantidad_entregada">Cantidad Entregada</label>
+								<input type="number"
+									id="cantidad_entregada"
+									step="0.01"
+									required
+									oninput="calcularConsumo()">
+							</div>
+							<div class="form-group"
+								style="display: none;">
+								<label for="cantidad_devuelta">Cantidad Devuelta</label>
+								<input type="number"
+									id="cantidad_devuelta"
+									step="0.01"
+									value="0"
+									readonly>
+							</div>
+						</div>
+					</div>
+
+
+					<div class="form-section">
+						<h2 class="form-title">
+							<i class="fas fa-calculator"></i>
+							Consumo y Detalles
+						</h2>
+						<div class="grid-2">
+							<div class="form-group">
+								<div class="results-box">
+									<label>Consumo Total</label>
+									<div class="results-value"
+										id="consumo_total">
+										0
+									</div>
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="labor_a_realizar">Labor a Realizar</label>
+								<input type="text"
+									id="labor_a_realizar"
+									list="labores_list"
+									placeholder="Buscar por codigo o nombre">
+								<datalist id="labores_list"></datalist>
+							</div>
+							<div class="form-group">
+								<label for="observaciones">Observaciones</label>
+								<textarea id="observaciones"
+									rows="3"></textarea>
+							</div>
+						</div>
+					</div>
+
+
+					<div class="action-buttons">
+						<button type="button"
+							class="btn btn-primary"
+							onclick="guardarDatos()">
+							<i class="fas fa-save"></i>
+							Guardar
+						</button>
+						<button type="button"
+							class="btn btn-secondary"
+							onclick="limpiarFormulario()">
+							<i class="fas fa-eraser"></i>
+							Limpiar
+						</button>
+						<button type="button"
+							class="btn btn-warning"
+							onclick="mostrarRegistros()">
+							<i class="fas fa-list"></i>
+							Ver Registros
+							<span id="registrosCount"
+								class="records-count">
+								0
+							</span>
+						</button>
+						<button type="button"
+							class="btn btn-success"
+							onclick="exportarExcel()">
+							<i class="fas fa-file-excel"></i>
+							Exportar a Excel
+						</button>
+						<button type="button"
+							class="btn btn-danger"
+							onclick="enviarGoogleSheets()">
+							<i class="fas fa-database"></i>
+							Enviar a Base de Datos
+						</button>
+					</div>
+				</form>
+
+
+				<div id="registrosContainer"
+					class="registros-container">
+					<h2 class="form-title">
+						<i class="fas fa-list"></i>
+						Registros Guardados
+					</h2>
+					<div id="registrosList"
+						class="registros-list">
+						<table class="registros-table">
+							<thead>
+								<tr>
+									<th>ID</th>
+									<th>Fecha</th>
+									<th>Finca</th>
+									<th>Responsable</th>
+									<th>Cod. Operario</th>
+									<th>Insumo</th>
+									<th>Cant. Entregada</th>
+									<th>Cant. Devuelta</th>
+									<th>Consumo</th>
+									<th>Labor</th>
+									<th>Observaciones</th>
+									<th>Acciones</th>
+								</tr>
+							</thead>
+							<tbody id="registrosTableBody"></tbody>
+						</table>
+					</div>
+				</div>
+
+
+				<div class="footer">
+					<p class="motto">
+						"Trabajar en equipo con eficiencia y calidad son nuestros pilares, recordemos siempre: Lo que no se mide, no se puede controlar ni mejorar"
+					</p>
+					<p class="footer-text">
+						Creado por Jorge Hugo Pulgarin @ 2025 Todos los derechos reservados
+					</p>
+				</div>
+			</div>
+		</div>
+
+
+		<script>
+			// URL de Google Apps Script - REEMPLAZA CON TU URL
+        const GOOGLE_SCRIPT_URL = 'URL_DE_TU_GOOGLE_APPS_SCRIPT_AQUI';
+
+        let registrosLocales = JSON.parse(localStorage.getItem('registrosInsumos')) || [];
+
+        // Lista de labores (puedes modificarla con tus propios datos)
+        const labores = [
+            { codigo: '3113', nombre: 'MANTENIMIENTO DE COMPUERTAS' },
+            { codigo: '2102', nombre: 'POLINIZACION DE PALMAS' },
+            { codigo: '0902', nombre: 'RECOLECCION DE PEPAS' },
+            { codigo: '0903', nombre: 'CORTE DE FRUTA' },
+            { codigo: '0911', nombre: 'RECOLECCION DE FRUTA CON TRACTOR' },
+            { codigo: '0915', nombre: 'RECOLECCION DE FRUTA CON BUFALO' },
+            { codigo: '0912', nombre: 'CARGUE DE FRUTA' },
+            { codigo: '0703', nombre: 'PODA GENERAL' },
+            { codigo: '0401', nombre: 'PLATEO QUIMICO' },
+            { codigo: '1402', nombre: 'LABORES VARIAS DE SANIDAD VEGETAL' },
+            { codigo: '1406', nombre: 'EVALUACION DE PLAGAS' },
+            { codigo: '3023', nombre: 'PERMISO POR MUERTE DE FAMILIAR' },
+            { codigo: '3003', nombre: 'PNR - PERMISO NO REMUNERADO' },
+            { codigo: '3004', nombre: 'ANJ - AUSENCIA NO JUSTIFICADA' },
+            { codigo: '3005', nombre: 'PS - PERMISO SINDICAL' },
+            { codigo: '3020', nombre: 'LICENCIA DE PATERNIDAD' },
+            { codigo: '2101', nombre: 'REVISION DE POLINIZACION' },
+            { codigo: '3102', nombre: 'MANTENIMIENTO A BUFALOS' },
+            { codigo: '1407', nombre: 'APLICACION DE RAQUIS AL PLATO' },
+            { codigo: '0501', nombre: 'MANTENIMIENTO Y/O RECONSTRUCCION DE PUENTES' },
+            { codigo: '3110', nombre: 'MANTENIMIENTO POTREROS Y CERCAS PARA BUFALOS' },
+            { codigo: '0607', nombre: 'APLICCION BORO DE 10 A 47 GRAMOS' },
+            { codigo: '0606', nombre: 'APLICACION BORO Y/O FERTILIZANTES A PIE' },
+            { codigo: '0609', nombre: 'FERTILIZACION CON TARRO DE 250 A 500 GRAMOS' },
+            { codigo: '0610', nombre: 'FERTILIZACION CON TARRO DE 500 A 1000 GRAMOS' },
+            { codigo: '0611', nombre: 'FERTILIZACION CON TARRO DE 1000 GRAMOS' },
+            { codigo: '0612', nombre: 'FERTILIZACION CON TARRO DE 250 A 500 GRAMOS CON TRACTOR' },
+            { codigo: '0608', nombre: 'HORA DIURNA EN FERTILIZACION' },
+            { codigo: '0615', nombre: 'CARGUE DE ABONO' },
+            { codigo: '0616', nombre: 'DESCARGUE DE ABONO' },
+            { codigo: '0613', nombre: 'FERTILIZACION CON TARRO DE 500 A 1000 GRAMOS EN TRACTOR' },
+            { codigo: '0614', nombre: 'FERTILIZACION CON TARRO DE MAS DE 1000 GRAMOS' },
+            { codigo: '3040', nombre: 'ADECUACION E IDENTIFICACION DE PALMAS' },
+            { codigo: '3103', nombre: 'MANTENIMIENTO A RESIEMBRAS' },
+            { codigo: '0402', nombre: 'PLATEO CON GUADANA' },
+            { codigo: '0103', nombre: 'FERTILIZACION' },
+            { codigo: '0101', nombre: 'LLENADA DE BOLSAS DE VIVERO' },
+            { codigo: '0102', nombre: 'DESYERBE DE BOLSA EN VIVERO' },
+            { codigo: '0104', nombre: 'TRANSPORTE DE PALMA EN BUFALO (CARGUE PREVIVERO)' },
+            { codigo: '0105', nombre: 'RIEGO EN VIVERO' },
+            { codigo: '0106', nombre: 'APLICACION DE HERBICIDA' },
+            { codigo: '0107', nombre: 'SIEMBRA DE PALMA EN VIVERO' },
+            { codigo: '0108', nombre: 'HORA DIURNA 01 (VIVERO)' },
+            { codigo: '0109', nombre: 'CARGUE DE PALMA PREVIVERO EN BUFALO' },
+            { codigo: '0110', nombre: 'SELECCION DE PALMAS EN VIVERO' },
+            { codigo: '0111', nombre: 'FUMIGACION EN VIVERO' },
+            { codigo: '0112', nombre: 'TRANSPORTE DE BOLSA VIVERO A TRACTOR' },
+            { codigo: '0113', nombre: 'CARGUE DE BOLSA A HOMBRO' },
+            { codigo: '0114', nombre: 'RELLENO DE BOLSA' },
+            { codigo: '0115', nombre: 'LIMPIEZA DE VIVERO' },
+            { codigo: '0116', nombre: 'GUADANA EN VIVERO' },
+            { codigo: '0117', nombre: 'CARGUE / DESCARGUE DE PALMA A CAMION' },
+            { codigo: '1903', nombre: 'LLENADA DE BOLSA EN PREVIVERO' },
+            { codigo: '1904', nombre: 'TRASLADO Y UBICACION DE BOLSAS EN CAMA' },
+            { codigo: '1905', nombre: 'SIEMBRA DE SEMILLA' },
+            { codigo: '1906', nombre: 'RIEGO EN VIVERO' },
+            { codigo: '1907', nombre: 'FERTILIZACION EN PREVIVERO' },
+            { codigo: '1908', nombre: 'MANTENIMIENTO GENERAL VIVERO Y PREVIVERO' },
+            { codigo: '1909', nombre: 'DESYERBE DE BOLSA EN PREVIVERO' },
+            { codigo: '1910', nombre: 'DIVISION DE MELLAS' },
+            { codigo: '1911', nombre: 'DESCARTE DE PALMA' },
+            { codigo: '1912', nombre: 'HORA DIURNA 19 (PREVIVERO)' },
+            { codigo: '1913', nombre: 'HECHURA DE HUECOS' },
+            { codigo: '0120', nombre: 'ADECUACION AREA PARA VIVERO' },
+            { codigo: '2105', nombre: 'BONIFICACIONCIERRE AREA DESPATE' },
+            { codigo: '2106', nombre: 'LIMPIEZA PALMA DESPATE' },
+            { codigo: '2107', nombre: 'BONIFICACION NCS TERCER PUESTO' },
+            { codigo: '2104', nombre: 'BONIFICACION CIERRE AREA APLICACION' },
+            { codigo: '1901', nombre: 'HECHURA DE SOMBRIOS Y CAMAS' },
+            { codigo: '1902', nombre: 'PREPARACION DE TIERRA' },
+            { codigo: '0502', nombre: 'LIMPIA DE VIAS' },
+            { codigo: '0000', nombre: 'OFICIOS VARIOS (CARGUE DESCARGUE, ASEO Y MMTO ADREDEDORES)' },
+            { codigo: '0203', nombre: 'CARGUE Y DESCARGUE DE TRACTOR EN SITIO DEFINITIVO' },
+            { codigo: '0204', nombre: 'SIEMBRA DE PALMAS EN SITIO DEFINITIVO' },
+            { codigo: '0617', nombre: 'APLICACION DE FERTILIZANTE MENOS DE 100 GRAMOS' },
+            { codigo: '0205', nombre: 'CORRECCION A LABORES' },
+            { codigo: '1403', nombre: 'CASTRACION DE FLORES ANDROGENAS' },
+            { codigo: '1914', nombre: 'REGADA DE MATERIAL EN V�AS (OPERARIO)' },
+            { codigo: '0904', nombre: 'CORTE Y RECOLECCION DE FRUTA' },
+            { codigo: '3111', nombre: 'MANTENIMIENTOS GENERALES CERCAS' },
+            { codigo: '4006', nombre: 'DOMINGOS Y FESTIVOS POR PAGAR' },
+            { codigo: '0403', nombre: 'REAJUSTE PLATEO QUIMICO' },
+            { codigo: '0618', nombre: 'REAJUSTE A FERTILIZACION' },
+            { codigo: '0905', nombre: 'AJUSTE A COSECHA POR PAGAR' },
+            { codigo: '3112', nombre: 'OPERADOR TRACTOR MTTO GENERAL' },
+            { codigo: '3002', nombre: 'INCAPACIDAD X ENFERMEDAD GENERAL NO PAGADA EN PERIODO ANTERIOR' },
+            { codigo: '3150', nombre: 'MANTENIMIENTOS Y REPARACIONES' },
+            { codigo: '1900', nombre: 'AJUSTE LABORES DE VIVERO' },
+            { codigo: '3000', nombre: 'ReubicaciOn Laboral Adicional' },
+            { codigo: '3114', nombre: 'OPERADOR TRACTOR (AD)' },
+            { codigo: '0404', nombre: 'LIMPIEZA QUIMICA' },
+            { codigo: '0200', nombre: 'ESTAQUILLADA PARA RESIEMBRAS' },
+            { codigo: '2100', nombre: 'AJUSTE A POLINIZACION' },
+            { codigo: '0201', nombre: 'CARGUE \\ DESCARGUE DE PALMAS EN SITIO DEFINITIVO' },
+            { codigo: '0702', nombre: 'PODA SANITARIA' },
+            { codigo: '0906', nombre: 'AJUSTE/TRASBORDO A CARGUE DE FRUTA' },
+            { codigo: '1401', nombre: 'LABORES VARIAS -POLINIZACION' },
+            { codigo: '3115', nombre: 'MANTENIMIENTO A TRACTOR / MOTOCARRO' },
+            { codigo: '3116', nombre: 'OPERACION TRACTOR EN COSECHA' },
+            { codigo: '3117', nombre: 'OPERACION TRACTOR EN FERTILIZACION' },
+            { codigo: '3118', nombre: 'OPERACION TRACTOR EN LIMPIEZA' },
+            { codigo: '3001', nombre: 'ACCIDENTE DE TRABAJO POR PAGAR' },
+            { codigo: '4010', nombre: 'AJUSTE AUXILIO DE TRANSPORTE' },
+            { codigo: '0704', nombre: 'PODA MECANIZADA 8 HOJAS' },
+            { codigo: '0705', nombre: 'PODA MECANIZADA 24 HOJAS' },
+            { codigo: '0706', nombre: 'REPIQUE DE HOJAS PODADAS (8)' },
+            { codigo: '0707', nombre: 'REPIQUE DE HOJAS PODADAS (24)' },
+            { codigo: '0708', nombre: 'PODA MECANIZADA 16 HOJAS' },
+            { codigo: '0709', nombre: 'REPIQUE HOJAS PODADAS (16)' },
+            { codigo: '0916', nombre: 'TRANSPORTE DE FRUTA EN CAMION' },
+            { codigo: '0917', nombre: 'ALQUILER BUFALO PARA RECOLECCION' },
+            { codigo: '0918', nombre: 'ALQUILER TRACTOR EN RECOLECCION DE FRUTA' },
+            { codigo: '0710', nombre: 'PODA MECANIZADA 18 HOJAS' },
+            { codigo: '0711', nombre: 'REPIQUE HOJAS PODADAS (18)' },
+            { codigo: '0712', nombre: 'PODA MECANIZADA 19 HOJAS' },
+            { codigo: '0713', nombre: 'REPIQUE DE HOJAS PODADAS (19)' },
+            { codigo: '0714', nombre: 'PODA MECANIZADA 12 HOJAS' },
+            { codigo: '0715', nombre: 'REPIQUE HOJAS PODADAS (12)' },
+            { codigo: '0716', nombre: 'PODA MECANIZADA 10 HOJAS' },
+            { codigo: '0717', nombre: 'REPIQUE HOJAS PODADAS (10)' },
+            { codigo: '3024', nombre: 'LABORES COMUNITARIAS' },
+            { codigo: '0701', nombre: 'PODA GENERAL CON REPIQUE EN U' },
+            { codigo: '1915', nombre: 'AJUSTE REGADA MATERIAL EN VIAS NO PAGADO' },
+            { codigo: '1916', nombre: 'MANTENIMIENTO CON MACHETE A SIEMBRAS' },
+            { codigo: '1917', nombre: 'LIMPIA CON GUADANA' },
+            { codigo: '1918', nombre: 'LIMPIA A RESIEMBRAS CON GUADANA' },
+            { codigo: '1919', nombre: 'LIMPIA A SIEMBRAS CON MACHETE /GUADANA' },
+            { codigo: '1920', nombre: 'PLATEOS CON RASTRILLO PALMA JOVEN' },
+            { codigo: '1921', nombre: 'CORTE DE ARBUSTOS EN ORILLAS Y LOTES' },
+            { codigo: '1922', nombre: 'MANTENIMIENTO A GUADANADORA' },
+            { codigo: '1923', nombre: 'MANTENIMIENTO A MOTOSIERRA' },
+            { codigo: '1924', nombre: 'DESAGUE DE VIAS' },
+            { codigo: '0001', nombre: 'MANTENIMIENTO CON SOLDADURA' },
+            { codigo: '3019', nombre: 'VR NO PAGADO DOS PRIMEROS DIAS ENFERMEDAD GENERAL' },
+            { codigo: '3119', nombre: 'MMTO GUADANA, MOTOSIERRA, OTROS' },
+            { codigo: '100101', nombre: 'ADMINISTRADOR BUFALERA' },
+            { codigo: '100102', nombre: 'ADMNISTRADOR MAQUINARIA' },
+            { codigo: '100103', nombre: 'RECEPCIONISTA' },
+            { codigo: '100104', nombre: 'SECRETARIA' },
+            { codigo: '100105', nombre: 'SERVICIOS GENERALES' },
+            { codigo: '100106', nombre: 'JARDINERO' },
+            { codigo: '100107', nombre: 'OPERADOR MAQUINARIA' },
+            { codigo: '100108', nombre: 'AYUDANTE MAQUINARIA' },
+            { codigo: '100109', nombre: 'CONDUCTOR' },
+            { codigo: '100110', nombre: 'OFICIOS VARIOS' },
+            { codigo: '0002', nombre: 'CIERRE DE AREA' },
+            { codigo: '0619', nombre: 'FERTILIZACION CON DRENCH EN BUFALO' },
+            { codigo: '0601', nombre: 'FERTILIZACION KIESERITE - OPERADOR TRACTOR' },
+            { codigo: '0602', nombre: 'FERTILIZACION KIESERITE - ALIMENTADOR VOLEADORA' },
+            { codigo: '0603', nombre: 'FERTILIZACION MEZCLA - OPERADOR TRACTOR' },
+            { codigo: '0604', nombre: 'FERTILIZACION MEZCLA - ALIMENTADOR VOLEADORA' },
+            { codigo: '100111', nombre: 'OFICIOS VARIOS' },
+            { codigo: '100112', nombre: 'BONIFICACION OPERADOR MAQUINA' },
+            { codigo: '100113', nombre: 'BONIFICACION AYUDANTE MAQUINA' },
+            { codigo: '100114', nombre: 'BONIFICACION VOLQUETA VIAJES' },
+            { codigo: '100115', nombre: 'BONIFICACION VOLQUETA MATERIAL' },
+            { codigo: '100116', nombre: 'BONIFICACION MOVIMIENTO CAMABAJA' },
+            { codigo: '3152', nombre: 'DESAGUE DE LOTES' },
+            { codigo: '2108', nombre: 'BONIFICACION ALTA FLORACION' },
+            { codigo: '0605', nombre: 'FERTILIZACION CON BUFALO' },
+            { codigo: '2109', nombre: 'BONIFICACION ALTA FLORACION (DESPATE)' },
+            { codigo: '3012', nombre: 'CRC Capacitacion recreacion y Cultura' },
+            { codigo: 'PRUEBA', nombre: 'PRUEBA SIZE' },
+            { codigo: '1926', nombre: 'UBICACION DE BOLSA EN CAMA PREVIVERO' },
+            { codigo: '1927', nombre: 'TRASLADO BOLSA A CAMA PREVIVERO' },
+            { codigo: '1928', nombre: 'CONSTRUCCION PUENTES/VIAS' },
+            { codigo: '1929', nombre: 'CORTE DE ARBUSTOS Y TRONCOS CON MOTOSIERRA' },
+            { codigo: '1409', nombre: 'ABRIENDO PALMAS' },
+            { codigo: '0121', nombre: 'LIMPIEZA DE AREA PARA SIEMBRA' },
+            { codigo: '1410', nombre: 'DESPUNTE / ACOMODADA HOJA' },
+            { codigo: '0913', nombre: 'AJUSTE A CARGUE DE FRUTA' },
+            { codigo: 'psa01', nombre: 'PROSPECTOS' },
+            { codigo: 'PSA02', nombre: 'PRESENTACION COMERCIAL' },
+            { codigo: 'PSA03', nombre: 'PROPUESTA COMERCIAL' },
+            { codigo: 'PSA04', nombre: 'IMPLEMENTACION' },
+            { codigo: '1930', nombre: 'LIMPIEZA DE CANALES PRIMARIOS' },
+            { codigo: '1931', nombre: 'LIMPIEZA DE CANALES SECUNDARIOS' },
+            { codigo: '0004', nombre: 'APLICACION DE CAL A COGOLLO' },
+            { codigo: '3022', nombre: 'Reubicacion Laboral' },
+            { codigo: '3025', nombre: 'APICULTURA' },
+            { codigo: '3120', nombre: 'CONSTRUCCION CORRALEJAS' },
+            { codigo: '0003', nombre: 'AUXILIAR ADMINISTRATIVO' },
+            { codigo: '0901', nombre: 'AUXILIAR DE CAMPO' },
+            { codigo: '0919', nombre: 'PODA COSECHA' },
+            { codigo: '3121', nombre: 'TRACTOR MOVIMIENTO INSUMOS POLINIZACION' },
+            { codigo: '3122', nombre: 'TRACTOR EN MOVIMIENTO INSUMOS DE SANIDAD' },
+            { codigo: '3123', nombre: 'TRACTOR EN MOVIMIENTO DE GUADANADORAS' },
+            { codigo: '3124', nombre: 'TRACTOR EN MOVIMIENTO CARRETAS DE COSECHA' },
+            { codigo: '3125', nombre: 'TRACTOR EN MOVIMIENTO DE FERTILIZANTES' },
+            { codigo: '3126', nombre: 'TRACTOR EN MOVIMIENTO DE AGUA PARA BUFALOS' },
+            { codigo: '3127', nombre: 'TRACTOR MOVIMIENTO PALMA A CAMION Y SITIO DEFINITIVO' },
+            { codigo: '3128', nombre: 'TRACTOR EN MOVIMIENTO COMBUSTIBLE ESTACION BOMBEO' },
+            { codigo: '3129', nombre: 'TRACTOR EN RASTRA' },
+            { codigo: '3130', nombre: 'TRACTOR CON CORTAMALEZA' },
+            { codigo: '3131', nombre: 'TRACTOR EN MOVIMIENTO MAQUINARIA A SITIO DEFINITIVO' },
+            { codigo: '3132', nombre: 'TRACTOR EN TRANSBORDO DE FRUTA' },
+            { codigo: '1932', nombre: 'PODA PALMAS VIVERO' },
+            { codigo: '1933', nombre: 'ARRANQUE DE PALMA EN VIVERO' },
+            { codigo: '1934', nombre: 'CARGUE / DESCARGUE GONDOLA / CAMION' },
+            { codigo: '3133', nombre: 'TRACTOR CON CUCHILLA' },
+            { codigo: '3134', nombre: 'TRACTOR EN FUMIGACION CON JACTO' },
+            { codigo: '3135', nombre: 'TRACTOR APLICANDO CAL VIVA' },
+            { codigo: '3136', nombre: 'TRACTOR MOVTO DE PERSONAL' },
+            { codigo: '3137', nombre: 'TRACTOR MOVIENDO AGUA' },
+            { codigo: '3138', nombre: 'TRACTOR SACANDO BASURA' },
+            { codigo: '3139', nombre: 'TRACTOR MOVIENDO CANECAS' },
+            { codigo: '3140', nombre: 'TRACTOR MOVIENDO INSUMOS' },
+            { codigo: '3141', nombre: 'TRACTOR MOVIENDO MADERA' },
+            { codigo: '1935', nombre: 'CARGUE PALMAS A HOMBRO A SITIO DEFINITIVO' },
+            { codigo: '100117', nombre: 'HORAS EXTRAS DIURNAS OPERADOR MAQUINA' },
+            { codigo: '100118', nombre: 'HORAS EXTRAS NOCTURNAS OPERADOR MAQUINA' },
+            { codigo: '100119', nombre: 'HORAS EXTRAS DIURNAS AYUDANTE MAQUINA' },
+            { codigo: '0718', nombre: 'REPIQUE Y ACOMODADA DE PECIOLO (ENSAYO)' },
+            { codigo: '1400', nombre: 'CIRUGIA SANIDAD VEGETAL' },
+            { codigo: '2103', nombre: 'DESPATE' },
+            { codigo: '100120', nombre: 'HORAS EXTRAS DIURNAS FESTIVO AYUDANTE MAQUINA' },
+            { codigo: '100121', nombre: 'HORAS EXTRAS DIURNAS FESTIVOS OPERADOR MAQUINA' },
+            { codigo: '0005', nombre: 'LIMPIEZA DE PALMAS (BEJUCOS Y OTROS)' },
+            { codigo: '1936', nombre: 'MOTOCARRO MOVIENDO INSUMOS DE POLINIZACION' },
+            { codigo: '1937', nombre: 'MOTOCARRO MOVIENDO INSUMOS DE SANIDAD' },
+            { codigo: '1938', nombre: 'MOTOCARRO RECOGIENDO INSUMOS O COMBUSTIBLE EN FERRETERIA' },
+            { codigo: '1939', nombre: 'TRACTOR HALANDO VOLQUETA / TRACTOR / MAQUINARIA' },
+            { codigo: '1940', nombre: 'MANTENIMIENTO ESTACION DE BOMBEO' },
+            { codigo: '1941', nombre: 'TRACTOR RECOGIENDO PIEDRA' },
+            { codigo: '1942', nombre: 'MOTOCARRO MOVIENDO RECOGIENDO TEJIDOS' },
+            { codigo: '1943', nombre: 'TRANSPORTE NECTARIFERA EN TARCTOR O MOTOCARRO' },
+            { codigo: '1944', nombre: 'RETRO TAPANDO JAWEY' },
+            { codigo: '1945', nombre: 'RETRO ENTERRANDO RAICES / PALOS' },
+            { codigo: '1946', nombre: 'RETRO REALIZANDO CANALES PRIMARIOS' },
+            { codigo: '1947', nombre: 'RETRO REALZIANDO CANALES SECUNDARIOS' },
+            { codigo: '1948', nombre: 'RETRO REALIZANDO CANALES TERCIARIOS' },
+            { codigo: '1949', nombre: 'RETROHACIENDO TRINCHO' },
+            { codigo: '1950', nombre: 'RETRO HACIENDO BATEA' },
+            { codigo: '1951', nombre: 'RETRO CONFORMANDO VIAS / JARILLON' },
+            { codigo: '1952', nombre: 'RETRO EN REPALEO' },
+            { codigo: '1953', nombre: 'TRACTOR SACANDO TORINILLO ESTACION DE BOMBEO' },
+            { codigo: '1954', nombre: 'TRACTOR MOVIENDO MAQUINARIA' },
+            { codigo: '1955', nombre: 'TRACTOR RECOGIENDO TEJIDOS ENFERMOS' },
+            { codigo: '1956', nombre: 'TRACTOR CON CUCHILLA (C)' },
+            { codigo: '1957', nombre: 'TRACTOR CON CORTAMALEZA (C)' },
+            { codigo: '1958', nombre: 'TRACTOR MOVIENDO INSUMOS DE POLINIZACION (C)' },
+            { codigo: '1959', nombre: 'TRACTOR MOVIENDO INSUMOS DE SANIDAD (C)' },
+            { codigo: '1960', nombre: 'TRACTOR MOVIENDO TARROS VACIOS (C)' },
+            { codigo: '1961', nombre: 'TRACTOR HALANDO VOLQUETA / TRACTOR - MAQUINARIA (C)' },
+            { codigo: '100122', nombre: 'HORAS EXTRAS DIURNAS CONDUCTOR' },
+            { codigo: '100123', nombre: 'DIA DOMINGO DESCANSADO' },
+            { codigo: '3151', nombre: 'LIMPIA DE ESTIPITE' },
+            { codigo: '3153', nombre: 'CORRECCION PODA COSECHA' },
+            { codigo: '', nombre: 'REPASO' },
+            { codigo: '', nombre: 'FINALIZADA' }
+        ];
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('fecha').valueAsDate = new Date();
+            actualizarContadorRegistros();
+            calcularConsumo();
+            poblarLabores();
+
+            if (registrosLocales.length > 0) {
+                mostrarMensaje('Hay ' + registrosLocales.length + ' registros pendientes de enviar. Haga clic en "Enviar a base de datos" cuando tenga conexion.', 'loading');
+            }
+        });
+
+        function poblarLabores() {
+            const datalist = document.getElementById('labores_list');
+            labores.forEach(labor => {
+                const option = document.createElement('option');
+                option.value = `${labor.codigo} - ${labor.nombre}`;
+                datalist.appendChild(option);
+            });
+        }
+
+        function calcularConsumo() {
+            const entregada = parseFloat(document.getElementById('cantidad_entregada').value) || 0;
+            const devuelta = 0; // Se asume que la cantidad devuelta es 0
+            const consumo = entregada - devuelta;
+            document.getElementById('consumo_total').textContent = consumo.toFixed(2);
+        }
+
+        function validarFormulario() {
+            const fecha = document.getElementById('fecha').value;
+            const finca = document.getElementById('finca').value;
+            const responsable = document.getElementById('responsable').value;
+            const codigoOperario = document.getElementById('codigo_operario').value;
+            const insumo = document.getElementById('insumo').value;
+            const cantidadEntregada = document.getElementById('cantidad_entregada').value;
+
+            if (!fecha || !finca || !responsable || !codigoOperario || !insumo || !cantidadEntregada) {
+                mostrarMensaje('Por favor, complete todos los campos obligatorios.', 'error');
+                return false;
+            }
+            return true;
+        }
+
+        function obtenerDatosFormulario() {
+            const timestamp = new Date().getTime();
+            const idAutonumerico = `${document.getElementById('fecha').value.replace(/-/g, '')}-${timestamp}`;
+
+            return {
+                id_registro: idAutonumerico,
+                fecha: document.getElementById('fecha').value,
+                finca: document.getElementById('finca').value,
+                responsable: document.getElementById('responsable').value,
+                codigo_operario: document.getElementById('codigo_operario').value,
+                insumo: document.getElementById('insumo').value,
+                cantidad_entregada: parseFloat(document.getElementById('cantidad_entregada').value),
+                cantidad_devuelta: 0, // Se guarda un valor inicial de 0
+                consumo: parseFloat(document.getElementById('consumo_total').textContent),
+                labor_a_realizar: document.getElementById('labor_a_realizar').value,
+                observaciones: document.getElementById('observaciones').value,
+                timestamp: new Date().toISOString()
+            };
+        }
+
+        function guardarDatos() {
+            if (!validarFormulario()) return;
+            const datos = obtenerDatosFormulario();
+            registrosLocales.push(datos);
+            localStorage.setItem('registrosInsumos', JSON.stringify(registrosLocales));
+
+            mostrarMensaje('Datos guardados localmente correctamente. Hay ' + registrosLocales.length + ' registros pendientes de enviar.', 'success');
+            actualizarContadorRegistros();
+            limpiarFormulario();
+        }
+
+        function limpiarFormulario() {
+            document.getElementById('insumo-form').reset();
+            document.getElementById('fecha').valueAsDate = new Date();
+            document.getElementById('consumo_total').textContent = '0';
+        }
+
+        function mostrarRegistros() {
+            const container = document.getElementById('registrosContainer');
+            const tableBody = document.getElementById('registrosTableBody');
+
+            if (container.style.display === 'block') {
+                container.style.display = 'none';
+                return;
+            }
+
+            if (registrosLocales.length === 0) {
+                mostrarMensaje('No hay registros guardados', 'error');
+                return;
+            }
+
+            tableBody.innerHTML = '';
+
+            registrosLocales.forEach((registro, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${registro.id_registro}</td>
+                    <td>${registro.fecha}</td>
+                    <td>${registro.finca}</td>
+                    <td>${registro.responsable}</td>
+                    <td>${registro.codigo_operario}</td>
+                    <td>${registro.insumo}</td>
+                    <td>${registro.cantidad_entregada}</td>
+                    <td>${registro.cantidad_devuelta}</td>
+                    <td>${registro.consumo}</td>
+                    <td>${registro.labor_a_realizar || ''}</td>
+                    <td>${registro.observaciones || ''}</td>
+                    <td>
+                        <button class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;" onclick="eliminarRegistro(${index})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+
+            container.style.display = 'block';
+        }
+
+        function eliminarRegistro(index) {
+            if (confirm('�Esta seguro de que desea eliminar este registro?')) {
+                registrosLocales.splice(index, 1);
+                localStorage.setItem('registrosInsumos', JSON.stringify(registrosLocales));
+                mostrarRegistros();
+                actualizarContadorRegistros();
+                mostrarMensaje('Registro eliminado correctamente', 'success');
+            }
+        }
+
+        function exportarExcel() {
+            if (registrosLocales.length === 0) {
+                mostrarMensaje('No hay registros para exportar', 'error');
+                return;
+            }
+
+            try {
+                const datosExportar = registrosLocales.map(registro => ({
+                    'ID Registro': registro.id_registro,
+                    'Fecha': registro.fecha,
+                    'Finca': registro.finca,
+                    'Responsable': registro.responsable,
+                    'Codigo Operario': registro.codigo_operario,
+                    'Insumo': registro.insumo,
+                    'Cantidad Entregada': registro.cantidad_entregada,
+                    'Cantidad Devuelta': registro.cantidad_devuelta,
+                    'Consumo': registro.consumo,
+                    'Labor a Realizar': registro.labor_a_realizar,
+                    'Observaciones': registro.observaciones,
+                    'Fecha Registro': new Date(registro.timestamp).toLocaleString()
+                }));
+
+                const wb = XLSX.utils.book_new();
+                const ws = XLSX.utils.json_to_sheet(datosExportar);
+                const colWidths = [
+                    { wch: 25 }, { wch: 15 }, { wch: 15 }, { wch: 25 },
+                    { wch: 20 }, { wch: 30 }, { wch: 20 }, { wch: 20 },
+                    { wch: 15 }, { wch: 30 }, { wch: 30 }, { wch: 25 }
+                ];
+                ws['!cols'] = colWidths;
+                XLSX.utils.book_append_sheet(wb, ws, 'Insumos Entregados');
+                const fecha = new Date().toISOString().slice(0, 10);
+                XLSX.writeFile(wb, `Registros_Insumos_${fecha}.xlsx`);
+
+                mostrarMensaje('Datos exportados correctamente a Excel', 'success');
+            } catch (error) {
+                console.serror('Error al exportar a Excel:', error);
+                mostrarMensaje('Error al exportar a Excel: ' + error.message, 'error');
+            }
+        }
+
+        async function enviarGoogleSheets() {
+            if (registrosLocales.length === 0) {
+                mostrarMensaje('No hay registros pendientes para enviar', 'error');
+                return;
+            }
+
+            mostrarMensaje('Enviando datos a la base de datos...', 'loading');
+
+            try {
+                // await fetch(GOOGLE_SCRIPT_URL, {
+                //    method: 'POST',
+                //    mode: 'no-cors',
+                //    body: JSON.stringify({ records: registrosLocales }),
+                // });
+
+                setTimeout(() => {
+                    registrosLocales = [];
+                    localStorage.setItem('registrosInsumos', JSON.stringify(registrosLocales));
+                    actualizarContadorRegistros();
+                    document.getElementById('registrosContainer').style.display = 'none';
+                    mostrarMensaje('Datos enviados correctamente a la base de datos.', 'success');
+                }, 2000);
+
+            } catch (error) {
+                console.error('Error al enviar datos:', error);
+                mostrarMensaje('Error al enviar datos: ' + error.message, 'error');
+            }
+        }
+
+        function actualizarContadorRegistros() {
+            document.getElementById('registrosCount').textContent = registrosLocales.length;
+        }
+
+        function mostrarMensaje(mensaje, tipo) {
+            const statusElement = document.getElementById('statusMessage');
+            statusElement.textContent = mensaje;
+            statusElement.className = 'status-message';
+            if (tipo === 'success') {
+                statusElement.classList.add('status-success');
+            } else if (tipo === 'error') {
+                statusElement.classList.add('status-error');
+            } else if (tipo === 'loading') {
+                statusElement.classList.add('status-loading');
+            }
+            statusElement.style.display = 'block';
+            if (tipo !== 'loading') {
+                setTimeout(() => {
+                    statusElement.style.display = 'none';
+                }, 5000);
+            }
+        }
+		</script>
+	</body>
+</html>

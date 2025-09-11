@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="es">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport"
+			content="width=device-width, initial-scale=1.0">
+		<title>
+			Registro de Devolucion de Insumos
+		</title>
+		<script src="https://cdn.tailwindcss.com"></script>
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+		<style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            width: 100%;
+            max-width: 1200px;
+        }
+        .header {
+            background: linear-gradient(90deg, #1C3F8A 0%, #295BAA 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .form-container {
+            padding: 25px;
+        }
+        .form-section {
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eaeaea;
+        }
+        .form-title {
+            color: #1C3F8A;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+        .form-title i {
+            margin-right: 10px;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border 0.3s;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #1C3F8A;
+            box-shadow: 0 0 0 2px rgba(28, 63, 138, 0.2);
+        }
+        .results-box {
+            background: #e8eaf6;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            margin-top: 10px;
+        }
+        .results-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1C3F8A;
+        }
+        .btn {
+            padding: 14px 25px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn i {
+            margin-right: 8px;
+        }
+        .btn-primary {
+            background: #1C3F8A;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #295BAA;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .btn-secondary {
+            background: #2196F3;
+            color: white;
+        }
+        .btn-secondary:hover {
+            background: #0b7dda;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .btn-warning {
+            background: #ff9800;
+            color: white;
+        }
+        .btn-warning:hover {
+            background: #f57c00;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .status-message {
+            padding: 12px;
+            border-radius: 6px;
+            margin: 15px 0;
+            text-align: center;
+            display: none;
+        }
+        .status-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .status-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .status-loading {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #777;
+            font-size: 14px;
+        }
+        .registros-container {
+            margin-top: 30px;
+            display: none;
+            overflow-x: auto;
+        }
+        .registros-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+        .registros-table th, .registros-table td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        .registros-table th {
+            background-color: #f5f5f5;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+        .registros-table tr:hover {
+            background-color: #f9f9f9;
+        }
+        .table-container {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        @media (max-width: 768px) {
+            .grid-2, .grid-3 {
+                grid-template-columns: 1fr;
+            }
+            .registros-table {
+                font-size: 12px;
+            }
+        }
+    </style>
+	</head>
+	<body>
+		<div class="container">
+			<div class="header">
+				<h1>
+					<i class="fas fa-undo"></i>
+					Registro de Devolucion de Insumos
+				</h1>
+				<p>
+					Formulario para registrar insumos devueltos
+				</p>
+			</div>
+
+
+
+			<div class="form-container">
+				<div id="statusMessage"
+					class="status-message"></div>
+
+
+
+				<form id="devolucion-form">
+					<div class="form-section">
+						<h2 class="form-title">
+							<i class="fas fa-search"></i>
+							Buscar Registro de Entrega
+						</h2>
+						<div class="grid-2">
+							<div class="form-group">
+								<label for="codigo_operario">Codigo de Operario</label>
+								<input type="text"
+									id="codigo_operario"
+									required>
+							</div>
+							<div class="form-group">
+								<label for="insumo">Insumo</label>
+								<select id="insumo"
+									required>
+									<option value>
+										Seleccione un insumo
+									</option>
+									<option value="MEZCLA POLINIZACION">MEZCLA POLINIZACION</option>
+									<option value="1086 - COSMO AGUA">1086 - COSMO AGUA</option>
+									<option value="315 - COSMO IN D">315 - COSMO IN D</option>
+									<option value="4206 - ANA LIQUIDA">4206 - ANA LIQUIDA</option>
+									<option value="698 - CARRIER POL">698 - CARRIER POL</option>
+									<option value="1526 - RAFAGA">1526 - RAFAGA</option>
+									<option value="1663 - RAFAGA LIQUIDO">
+										1663 - RAFAGA LIQUIDO
+									</option>
+									<option value="2939 - IMIDA CLOPRID">
+										2939 - IMIDA CLOPRID
+									</option>
+									<option value="3953 - INVETRINA">3953 - INVETRINA</option>
+									<option value="4160 - SOSMA">4160 - SOSMA</option>
+									<option value="4441 - FEROMONAS STRATEGUS">
+										4441 - FEROMONAS STRATEGUS
+									</option>
+									<option value="846 - SEROK">846 - SEROK</option>
+									<option value="906 - FEROMONAS RHYCHOP">
+										906 - FEROMONAS RHYCHOP
+									</option>
+									<option value="1136 - REGLONE">1136 - REGLONE</option>
+									<option value="2603 - AMETRINA">2603 - AMETRINA</option>
+									<option value="3029 - PANZER">3029 - PANZER</option>
+									<option value="31 - CERRERO">31 - CERRERO</option>
+									<option value="3761 - AMINA">3761 - AMINA</option>
+									<option value="3762 - PANZER 480">3762 - PANZER 480</option>
+									<option value="73 - COSMO AGUA">73 - COSMO AGUA</option>
+									<option value="1664 - MANCOZEB">1664 - MANCOZEB</option>
+									<option value="17 - LORSBAN">17 - LORSBAN</option>
+									<option value="2932 - RIDOMIL">2932 - RIDOMIL</option>
+									<option value="2936 - RUGIDO 20SL">2936 - RUGIDO 20SL</option>
+									<option value="2937 - CARRIER">2937 - CARRIER</option>
+									<option value="2938 - ZORVEC">2938 - ZORVEC</option>
+									<option value="2941 - ZAMPRO">2941 - ZAMPRO</option>
+									<option value="3430 - CARBENDAZIN">3430 - CARBENDAZIN</option>
+									<option value="3712 - TERRASAFE">3712 - TERRASAFE</option>
+									<option value="42 - FIPRONIL">42 - FIPRONIL</option>
+									<option value="43 - FOSETAL DE ALUMINIO">
+										43 - FOSETAL DE ALUMINIO
+									</option>
+									<option value="1216 - ACEITE 15 W 40">
+										1216 - ACEITE 15 W 40
+									</option>
+									<option value="78 - ACPM">78 - ACPM</option>
+									<option value="78 - BIODISEL">78 - BIODISEL</option>
+									<option value="79 - GASOLINA">79 - GASOLINA</option>
+									<option value="4427 - HIPOCLORITO DE CALCIO LIQUIDO">
+										4427 - HIPOCLORITO DE CALCIO LIQUIDO
+									</option>
+									<option value="72 - DIPEL">72 - DIPEL</option>
+									<option value="1047 - NITROXTEND">1047 - NITROXTEND</option>
+									<option value="1834 - OXIDO DE MAGNESIO 88%">
+										1834 - OXIDO DE MAGNESIO 88%
+									</option>
+									<option value="19 - DAP">19 - DAP</option>
+									<option value="2871 - CAL VIVA">2871 - CAL VIVA</option>
+									<option value="3331 - KIESERITA ALEMANA">
+										3331 - KIESERITA ALEMANA
+									</option>
+									<option value="348 - KSC PHYT ACTYL AMARILLO">
+										348 - KSC PHYT ACTYL AMARILLO
+									</option>
+									<option value="349 - KSC PHYT ACTYL V LILA X 1 KG">
+										349 - KSC PHYT ACTYL V LILA X 1 KG
+									</option>
+									<option value="605 - MEZCLA 18-0-36">
+										605 - MEZCLA 18-0-36
+									</option>
+									<option value="64 - GZ FERTIACTYL">64 - GZ FERTIACTYL</option>
+									<option value="825 - BOROZINCO GRANULAR">
+										825 - BOROZINCO GRANULAR
+									</option>
+									<option value="847 - KCL GRANULAR">847 - KCL GRANULAR</option>
+									<option value="848 - MEZCLA BORO-POTASIO">
+										848 - MEZCLA BORO-POTASIO
+									</option>
+									<option value="852 - MEZCLA 15-4-23-4-2">
+										852 - MEZCLA 15-4-23-4-2
+									</option>
+								</select>
+							</div>
+						</div>
+						<div class="text-center mt-4">
+							<button type="button"
+								class="btn btn-secondary"
+								onclick="buscarRegistro()">
+								<i class="fas fa-search"></i>
+								Buscar
+							</button>
+							<button type="button"
+								class="btn btn-warning"
+								onclick="mostrarTodosRegistros()">
+								<i class="fas fa-list"></i>
+								Ver Todos los Registros
+							</button>
+						</div>
+					</div>
+
+
+
+					<div id="devolucion-form-section"
+						style="display: none;">
+						<h2 class="form-title">
+							<i class="fas fa-boxes"></i>
+							Detalles de la Devolucion
+						</h2>
+						<div class="grid-2">
+							<div class="form-group">
+								<label for="fecha_entrega">Fecha de Entrega</label>
+								<input type="text"
+									id="fecha_entrega"
+									readonly
+									class="bg-gray-100 cursor-not-allowed">
+							</div>
+							<div class="form-group">
+								<label for="finca_entrega">Finca</label>
+								<input type="text"
+									id="finca_entrega"
+									readonly
+									class="bg-gray-100 cursor-not-allowed">
+							</div>
+						</div>
+						<div class="grid-2">
+							<div class="form-group">
+								<label for="responsable_entrega">Responsable</label>
+								<input type="text"
+									id="responsable_entrega"
+									readonly
+									class="bg-gray-100 cursor-not-allowed">
+							</div>
+							<div class="form-group">
+								<label for="cantidad_entregada">Cantidad Entregada</label>
+								<input type="number"
+									id="cantidad_entregada"
+									step="0.01"
+									readonly
+									class="bg-gray-100 cursor-not-allowed">
+							</div>
+						</div>
+						<div class="grid-2">
+							<div class="form-group">
+								<label for="cantidad_devuelta_actual">
+									Cantidad Devuelta Actual
+								</label>
+								<input type="number"
+									id="cantidad_devuelta_actual"
+									step="0.01"
+									readonly
+									class="bg-gray-100 cursor-not-allowed">
+							</div>
+							<div class="form-group">
+								<label for="cantidad_devuelta_nueva">
+									Nueva Cantidad Devuelta
+								</label>
+								<input type="number"
+									id="cantidad_devuelta_nueva"
+									step="0.01"
+									required>
+							</div>
+						</div>
+						<div class="grid-2">
+							<div class="form-group">
+								<label for="labor_entrega">Labor a Realizar</label>
+								<input type="text"
+									id="labor_entrega"
+									readonly
+									class="bg-gray-100 cursor-not-allowed">
+							</div>
+							<div class="form-group">
+								<label for="observaciones_entrega">Observaciones</label>
+								<input type="text"
+									id="observaciones_entrega"
+									readonly
+									class="bg-gray-100 cursor-not-allowed">
+							</div>
+						</div>
+						<div class="results-box mt-4">
+							<label>
+								Consumo Total Actualizado
+							</label>
+							<div class="results-value"
+								id="consumo_total_actualizado">
+								0
+							</div>
+						</div>
+						<div class="text-center mt-4">
+							<button type="button"
+								class="btn btn-primary"
+								onclick="guardarDevolucion()">
+								<i class="fas fa-save"></i>
+								Guardar Devolucion
+							</button>
+						</div>
+					</div>
+				</form>
+
+
+
+				<div id="registrosContainer"
+					class="registros-container">
+					<h2 class="form-title">
+						<i class="fas fa-list"></i>
+						Registros de Entregas
+					</h2>
+					<div class="table-container">
+						<table class="registros-table">
+							<thead>
+								<tr>
+									<th>ID</th>
+									<th>Fecha</th>
+									<th>Finca</th>
+									<th>Responsable</th>
+									<th>Cod. Operario</th>
+									<th>Insumo</th>
+									<th>Entregado</th>
+									<th>Devuelto</th>
+									<th>Consumo</th>
+									<th>Labor</th>
+									<th>Observaciones</th>
+								</tr>
+							</thead>
+							<tbody id="registrosTableBody"></tbody>
+						</table>
+					</div>
+				</div>
+
+
+
+				<div class="footer">
+					<p>
+						"Trabajar en equipo con eficiencia y calidad son nuestros pilares..."
+					</p>
+					<p class="footer-text">
+						Creado por Jorge Hugo Pulgarin @ 2025 Todos los derechos reservados
+					</p>
+				</div>
+			</div>
+		</div>
+
+
+
+		<script>
+			let registrosLocales = [];
+        let registroEncontrado = null;
+        let registroIndex = -1;
+
+        // Cargar los registros al iniciar la pagina
+        document.addEventListener('DOMContentLoaded', () => {
+            registrosLocales = JSON.parse(localStorage.getItem('registrosInsumos')) || [];
+            console.log('Registros cargados al iniciar:', registrosLocales);
+        });
+
+        document.getElementById('cantidad_devuelta_nueva').addEventListener('input', calcularConsumoActualizado);
+
+        function buscarRegistro() {
+            const codigoOperario = document.getElementById('codigo_operario').value.trim();
+            const insumoSeleccionado = document.getElementById('insumo').value;
+
+            if (!codigoOperario || !insumoSeleccionado) {
+                mostrarMensaje('Por favor, ingrese el Codigo de Operario y seleccione el Insumo.', 'error');
+                return;
+            }
+
+            // Buscar el registro que coincida con ambos campos
+            registroIndex = registrosLocales.findIndex(registro =>
+                registro.codigo_operario === codigoOperario && registro.insumo === insumoSeleccionado
+            );
+
+            if (registroIndex !== -1) {
+                registroEncontrado = registrosLocales[registroIndex];
+                mostrarMensaje('Registro encontrado. Por favor, ingrese la cantidad devuelta.', 'success');
+                document.getElementById('devolucion-form-section').style.display = 'block';
+
+                // Llenar los campos con los datos del registro
+                document.getElementById('fecha_entrega').value = registroEncontrado.fecha;
+                document.getElementById('finca_entrega').value = registroEncontrado.finca;
+                document.getElementById('responsable_entrega').value = registroEncontrado.responsable;
+                document.getElementById('cantidad_entregada').value = registroEncontrado.cantidad_entregada;
+                document.getElementById('cantidad_devuelta_actual').value = registroEncontrado.cantidad_devuelta || 0;
+                document.getElementById('cantidad_devuelta_nueva').value = registroEncontrado.cantidad_devuelta || 0;
+                document.getElementById('labor_entrega').value = registroEncontrado.labor_a_realizar || 'No especificada';
+                document.getElementById('observaciones_entrega').value = registroEncontrado.observaciones || 'Ninguna';
+
+                calcularConsumoActualizado();
+            } else {
+                mostrarMensaje('No se encontro un registro para este operario y este insumo. Por favor, revise que los datos esten correctos.', 'error');
+                document.getElementById('devolucion-form-section').style.display = 'none';
+            }
+        }
+
+        function calcularConsumoActualizado() {
+            if (!registroEncontrado) return;
+            const cantidadEntregada = parseFloat(document.getElementById('cantidad_entregada').value) || 0;
+            const cantidadDevueltaNueva = parseFloat(document.getElementById('cantidad_devuelta_nueva').value) || 0;
+            const consumo = cantidadEntregada - cantidadDevueltaNueva;
+            document.getElementById('consumo_total_actualizado').textContent = consumo.toFixed(2);
+        }
+
+        function guardarDevolucion() {
+            if (!registroEncontrado || registroIndex === -1) {
+                mostrarMensaje('Por favor, busque un registro primero.', 'error');
+                return;
+            }
+
+            const nuevaCantidadDevuelta = parseFloat(document.getElementById('cantidad_devuelta_nueva').value);
+            if (isNaN(nuevaCantidadDevuelta) || nuevaCantidadDevuelta < 0) {
+                mostrarMensaje('La cantidad devuelta debe ser un numero valido mayor o igual a cero.', 'error');
+                return;
+            }
+
+            // Validar que la cantidad devuelta no sea mayor que la entregada
+            if (nuevaCantidadDevuelta > registroEncontrado.cantidad_entregada) {
+                mostrarMensaje('La cantidad devuelta no puede ser mayor que la cantidad entregada.', 'error');
+                return;
+            }
+
+            // Actualizar el objeto de registro
+            registroEncontrado.cantidad_devuelta = nuevaCantidadDevuelta;
+            registroEncontrado.consumo = parseFloat(document.getElementById('consumo_total_actualizado').textContent);
+
+            // Actualizar el registro en el array
+            registrosLocales[registroIndex] = registroEncontrado;
+
+            // Guardar el array completo de vuelta en localStorage
+            localStorage.setItem('registrosInsumos', JSON.stringify(registrosLocales));
+
+            mostrarMensaje('Devolucion registrada y consumo actualizado correctamente. Puedes ver el cambio en el formulario de entrega.', 'success');
+
+            // Limpiar el formulario y la variable de registro encontrado para el siguiente uso
+            document.getElementById('devolucion-form').reset();
+            document.getElementById('devolucion-form-section').style.display = 'none';
+            registroEncontrado = null;
+            registroIndex = -1;
+        }
+
+        function mostrarTodosRegistros() {
+            const container = document.getElementById('registrosContainer');
+            const tableBody = document.getElementById('registrosTableBody');
+
+            if (container.style.display === 'block') {
+                container.style.display = 'none';
+                return;
+            }
+
+            if (registrosLocales.length === 0) {
+                mostrarMensaje('No hay registros de entregas guardados', 'error');
+                return;
+            }
+
+            tableBody.innerHTML = '';
+
+            registrosLocales.forEach((registro, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${registro.id_registro || index + 1}</td>
+                    <td>${registro.fecha}</td>
+                    <td>${registro.finca}</td>
+                    <td>${registro.responsable}</td>
+                    <td>${registro.codigo_operario}</td>
+                    <td>${registro.insumo}</td>
+                    <td>${registro.cantidad_entregada}</td>
+                    <td>${registro.cantidad_devuelta || 0}</td>
+                    <td>${registro.consumo || (registro.cantidad_entregada - (registro.cantidad_devuelta || 0))}</td>
+                    <td>${registro.labor_a_realizar || 'No especificada'}</td>
+                    <td>${registro.observaciones || 'Ninguna'}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+
+            container.style.display = 'block';
+        }
+
+        function mostrarMensaje(mensaje, tipo) {
+            const statusElement = document.getElementById('statusMessage');
+            statusElement.textContent = mensaje;
+            statusElement.className = 'status-message';
+            if (tipo === 'success') {
+                statusElement.classList.add('status-success');
+            } else if (tipo === 'error') {
+                statusElement.classList.add('status-error');
+            } else if (tipo === 'loading') {
+                statusElement.classList.add('status-loading');
+            }
+            statusElement.style.display = 'block';
+            if (tipo !== 'loading') {
+                setTimeout(() => {
+                    statusElement.style.display = 'none';
+                }, 5000);
+            }
+        }
+		</script>
+	</body>
+</html>

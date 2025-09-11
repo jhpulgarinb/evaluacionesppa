@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Insumos y Labores</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .main-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            max-width: 900px;
+            width: 100%;
+            text-align: center;
+        }
+        .header {
+            background: linear-gradient(90deg, #1C3F8A 0%, #295BAA 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        .card-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+        .card {
+            background: #f0f4f8;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 25px;
+            text-align: center;
+            width: 100%;
+            max-width: 250px;
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+            cursor: pointer;
+            text-decoration: none;
+            color: #1a202c;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+        .card i {
+            font-size: 3rem;
+            color: #1C3F8A;
+            margin-bottom: 15px;
+        }
+        .card h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #1C3F8A;
+        }
+        .card p {
+            font-size: 0.9rem;
+            color: #4a5568;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="header">
+            <h1 class="text-3xl font-bold"><i class="fas fa-seedling"></i> Sistema de Insumos y Labores</h1>
+            <p class="mt-2 text-sm">Seleccione una de las opciones para iniciar o continuar con el proceso</p>
+        </div>
+
+        <div class="card-container">
+            <a href="entrega_insumos.html" class="card">
+                <i class="fas fa-box"></i>
+                <h2>Entrega de Insumos</h2>
+                <p>Registra la salida de insumos del almacén.</p>
+            </a>
+
+            <a href="devolucion_insumos.html" class="card">
+                <i class="fas fa-undo"></i>
+                <h2>Devolución de Insumos</h2>
+                <p>Actualiza el registro si hay insumos que se devuelven.</p>
+            </a>
+
+            <a href="reporte_labores.html" class="card">
+                <i class="fas fa-clipboard-list"></i>
+                <h2>Reporte de Labores</h2>
+                <p>Registra las actividades y el avance del día.</p>
+            </a>
+            <a href="manual_reportes.html" class="menu-item">
+                <i class="fas fa-book-open"></i>
+                <span>Manual de Entrega Insumos y Reportes</span>
+            </a>
+        </div>
+    </div>
+</body>
+</html>

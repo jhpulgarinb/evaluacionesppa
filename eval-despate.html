@@ -526,7 +526,7 @@
                     </button>
                     <button type="button"
                         class="btn btn-secondary"
-                        onclick="limpiarFormulario()">
+                        onclick="limpiarFormularioCompleto()">
                         <i class="fas fa-eraser"></i>
                         Limpiar
                     </button>
@@ -623,12 +623,60 @@
             const dd = String(today.getDate()).padStart(2, '0');
             document.getElementById('fecha').value = `${yyyy}-${mm}-${dd}`;
 
+            // Cargar campos permanentes
+            cargarCamposPermanentes();
+            
+            // Agregar eventos para guardar campos permanentes
+            agregarEventosCamposPermanentes();
+
             actualizarContadorRegistros();
             calcularResultados();
             if (registrosLocales.length > 0) {
                 mostrarMensaje('Hay ' + registrosLocales.length + ' registros pendientes de enviar a Base de datos. Haga clic en "Enviar a Base de datos" cuando tenga conexion.', 'loading');
             }
         });
+
+        // Funciones para campos permanentes
+        function cargarCamposPermanentes() {
+            const camposPermanentes = JSON.parse(localStorage.getItem('camposPermanentesDespate')) || {};
+            
+            if (camposPermanentes.finca) {
+                document.getElementById('finca').value = camposPermanentes.finca;
+            }
+            if (camposPermanentes.evaluador) {
+                document.getElementById('evaluador').value = camposPermanentes.evaluador;
+            }
+            if (camposPermanentes.codigo_operario) {
+                document.getElementById('codigo_operario').value = camposPermanentes.codigo_operario;
+            }
+            if (camposPermanentes.centro_costo) {
+                document.getElementById('centro_costo').value = camposPermanentes.centro_costo;
+            }
+        }
+
+        function guardarCamposPermanentes() {
+            const camposPermanentes = {
+                finca: document.getElementById('finca').value,
+                evaluador: document.getElementById('evaluador').value,
+                codigo_operario: document.getElementById('codigo_operario').value,
+                centro_costo: document.getElementById('centro_costo').value
+            };
+            localStorage.setItem('camposPermanentesDespate', JSON.stringify(camposPermanentes));
+        }
+
+        function agregarEventosCamposPermanentes() {
+            const camposPermanentes = ['finca', 'evaluador', 'codigo_operario', 'centro_costo'];
+            
+            camposPermanentes.forEach(function(campo) {
+                const elemento = document.getElementById(campo);
+                elemento.addEventListener('change', guardarCamposPermanentes);
+                elemento.addEventListener('blur', guardarCamposPermanentes);
+            });
+        }
+
+        function limpiarCamposPermanentes() {
+            localStorage.removeItem('camposPermanentesDespate');
+        }
 
         // Funcion para enviar datos a Base de datos (MEJORADA)
         async function enviarGoogleSheets() {
@@ -789,8 +837,40 @@
             }
         }
 
-        // Funcion para limpiar formulario
+        // Funcion para limpiar formulario (mantiene campos permanentes)
         function limpiarFormulario() {
+            // Guardar valores de campos permanentes
+            const finca = document.getElementById('finca').value;
+            const evaluador = document.getElementById('evaluador').value;
+            const codigo_operario = document.getElementById('codigo_operario').value;
+            const centro_costo = document.getElementById('centro_costo').value;
+            
+            // Limpiar todo el formulario
+            document.getElementById('pollination-form').reset();
+            
+            // Restaurar fecha actual
+            const today = new Date();
+            const yyyy = today.getFullYear();
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const dd = String(today.getDate()).padStart(2, '0');
+            document.getElementById('fecha').value = `${yyyy}-${mm}-${dd}`;
+            
+            // Restaurar campos permanentes
+            document.getElementById('finca').value = finca;
+            document.getElementById('evaluador').value = evaluador;
+            document.getElementById('codigo_operario').value = codigo_operario;
+            document.getElementById('centro_costo').value = centro_costo;
+            
+            // Limpiar contadores e imagen
+            document.getElementById('flor_despatada').textContent = '0';
+            document.getElementById('flor_no_despatada').textContent = '0';
+            document.getElementById('imagenes').value = '';
+            
+            calcularResultados();
+        }
+        
+        // Funcion para limpiar formulario completamente (incluyendo campos permanentes)
+        function limpiarFormularioCompleto() {
             document.getElementById('pollination-form').reset();
             const today = new Date();
             const yyyy = today.getFullYear();
@@ -800,6 +880,10 @@
             document.getElementById('flor_despatada').textContent = '0';
             document.getElementById('flor_no_despatada').textContent = '0';
             document.getElementById('imagenes').value = '';
+            
+            // Limpiar campos permanentes del localStorage
+            limpiarCamposPermanentes();
+            
             calcularResultados();
         }
 

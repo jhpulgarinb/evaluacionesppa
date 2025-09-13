@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport"
+			content="width=device-width, initial-scale=1.0">
+		<title>Menú PPA</title>
+		<style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            padding: 10px;
+            width: 250px;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+	</head>
+	<body>
+		<div class="container">
+			<div class="title">Productividad PPA</div>
+			<button id="open-dashboard">
+				Abrir Panel de Control
+			</button>
+			<button id="open-polin-eval">
+				Abrir Evaluación Polinización
+			</button>
+			<button id="open-form">Abrir Formulario</button>
+		</div>
+		<script src="popup.js"></script>
+	</body>
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+	<head>
+		<meta charset="UTF-8">
+		<title>
+			Redirección Automática
+		</title>
+		<script>
+			// URLs de redirección
+        const LOCAL_URL = "http://192.168.1.50:8002/#/historial";
+        const REMOTE_URL = "http://129.222.202.159:8002/#/historial";
+        const TIMEOUT = 3000; // 3 segundos de espera para la conexión local
+
+        // Función para probar la conexión usando fetch con timeout
+        async function testConnection(url) {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), TIMEOUT);
+            
+            try {
+                const response = await fetch(url, {
+                    method: 'HEAD',
+                    mode: 'no-cors',
+                    signal: controller.signal
+                });
+                clearTimeout(timeoutId);
+                return true;
+            } catch (error) {
+                clearTimeout(timeoutId);
+                return false;
+            }
+        }
+
+        // Función principal de redirección
+        async function redirect() {
+            try {
+                // Primero intentamos con la URL local
+                const isLocalAvailable = await testConnection(LOCAL_URL);
+                
+                if (isLocalAvailable) {
+                    window.location.replace(LOCAL_URL);
+                } else {
+                    // Si falla la local, intentamos con la remota
+                    const isRemoteAvailable = await testConnection(REMOTE_URL);
+                    
+                    if (isRemoteAvailable) {
+                        window.location.replace(REMOTE_URL);
+                    } else {
+                        document.getElementById("status").innerHTML = 
+                            "<p style='color:red'>No se pudo conectar a ningún servidor. Por favor intente más tarde.</p>";
+                    }
+                }
+            } catch (error) {
+                console.error("Error en la redirección:", error);
+                window.location.replace(REMOTE_URL);
+            }
+        }
+
+        // Iniciar la redirección cuando la página cargue
+        window.onload = redirect;
+		</script>
+	</head>
+	<body>
+		<div style="text-align: center; margin-top: 50px; font-family: Arial, sans-serif;">
+			<h2>
+				Redirigiendo a la aplicación...
+			</h2>
+			<div id="status">
+				<p>
+					Por favor espere mientras verificamos la conexión óptima.
+				</p>
+				<p>
+					Si la redirección no se completa automáticamente,
+					<a href="#"
+						onclick="redirect(); return false;">
+						haga clic aquí
+					</a>
+					.
+				</p>
+			</div>
+		</div>
+	</body>
+</html>

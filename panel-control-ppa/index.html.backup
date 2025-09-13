@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="es-ES">
+	<head>
+		<meta charset="UTF-8">
+		<meta http-equiv="Content-Type"
+			content="text/html; charset=utf-8">
+		<meta name="viewport"
+			content="width=device-width, initial-scale=1.0">
+		<title>
+			Panel de Control PPA
+		</title>
+		<style>
+        :root {
+            --color-header: #1a365d;
+            --color-footer: #bee3f8;
+            --color-background: #f0fff4;
+            --color-card: #ffffff;
+            --color-primary: #2b6cb0;
+            --color-secondary: #38a169;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--color-background);
+            color: #2d3748;
+            min-height: 100vh;
+        }
+        .container {
+            width: 95%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            background-color: var(--color-header);
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            border-radius: 8px 8px 0 0;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        .header-content {
+            display: flex;
+            align-items: center;
+        }
+        .logo {
+            height: 70px;
+            width: auto;
+        }
+        h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        .menu {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        .menu-item {
+            background-color: var(--color-card);
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: all 0.3s ease;
+            text-align: center;
+            border-top: 4px solid var(--color-primary);
+        }
+        .menu-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+        }
+        .menu-item a {
+            display: block;
+            padding: 25px 20px;
+            text-decoration: none;
+            color: #2d3748;
+        }
+        .menu-item h2 {
+            margin-top: 15px;
+            color: var(--color-primary);
+            font-size: 20px;
+            font-weight: 600;
+        }
+        .menu-item p {
+            margin-bottom: 0;
+            color: #4a5568;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .menu-item-icon {
+            font-size: 42px;
+            margin-bottom: 15px;
+            display: block;
+            background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 15px;
+            line-height: 60px;
+        }
+        .menu-item select {
+            width: 80%;
+            padding: 8px;
+            margin-top: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        .menu-item button {
+            margin-top: 10px;
+            padding: 8px 15px;
+            background-color: var(--color-primary);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            background-color: var(--color-footer);
+            border-radius: 0 0 8px 8px;
+            font-size: 13px;
+            color: #2d3748;
+            box-shadow: 0 -4px 6px rgba(0,0,0,0.05);
+        }
+        .footer-text {
+            margin: 5px 0;
+        }
+        .motto {
+            font-style: italic;
+            font-weight: bold;
+            margin: 15px 0;
+            color: #006400;
+            font-size: 30px;
+            line-height: 1.4;
+        }
+        @media (max-width: 600px) {
+            .menu {
+                grid-template-columns: 1fr;
+            }
+            h1 {
+                font-size: 24px;
+            }
+            header {
+                flex-direction: column;
+                padding: 15px;
+            }
+            .logo {
+                height: 40px;
+                margin-bottom: 10px;
+            }
+            .motto {
+                font-size: 15px;
+                padding: 0 15px;
+            }
+        }
+
+        /* Estilos para los modales */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            width: 300px;
+        }
+        .modal-content input {
+            padding: 8px;
+            margin: 10px 0;
+            width: 80%;
+        }
+        .modal-content button {
+            margin: 5px;
+            padding: 8px 15px;
+            cursor: pointer;
+        }
+        .alternative-link {
+            margin-top: 10px;
+        }
+        .alternative-link a {
+            color: var(--color-primary);
+            text-decoration: none;
+        }
+    </style>
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+	</head>
+	<body>
+		<div class="container">
+			<header>
+				<div class="header-content">
+					<img src="logoppa.png"
+						alt="Logo PPA"
+						class="logo">
+					<h1>
+						Panel de Control PPA S.A.S
+					</h1>
+				</div>
+			</header>
+
+			<div class="menu">
+				<div class="menu-item">
+					<a href="https://app.powerbi.com/view?r=eyJrIjoiMmZhNTQzZTUtOWQ3My00N2I1LTgzZTQtNWE5MzVjZDJiODdkIiwidCI6Ijc0MmI3NWQ0LWU3YzItNDNkYy1hYzQ4LWVmMjQ1NDMwZjg2OSJ9"
+						target="_blank">
+						<i class="menu-item-icon fas fa-industry"></i>
+						<h2>
+							Produccion e Insumos
+						</h2>
+						<p></p>
+					</a>
+				</div>
+
+				<div class="menu-item">
+					<a href="https://app.powerbi.com/view?r=eyJrIjoiN2ZiMDZlMTAtYzgzMC00MTA3LWE1NDEtNDg0OTJkYzI2ZWE3IiwidCI6Ijc0MmI3NWQ0LWU3YzItNDNkYy1hYzQ4LWVmMjQ1NDMwZjg2OSJ9"
+						target="_blank">
+						<i class="menu-item-icon fas fa-chart-pie"></i>
+						<h2>Presupuesto</h2>
+						<p></p>
+					</a>
+				</div>
+
+				<div class="menu-item">
+					<a href="https://app.powerbi.com/view?r=eyJrIjoiOGI1YWI2NmEtYzg1Zi00YWJlLWEyMjYtM2ZhM2QzOWZkZDZiIiwidCI6Ijc0MmI3NWQ0LWU3YzItNDNkYy1hYzQ4LWVmMjQ1NDMwZjg2OSJ9"
+						target="_blank">
+						<i class="menu-item-icon fas fa-cloud-rain"></i>
+						<h2>
+							Graficos de Precipitacion
+						</h2>
+						<h4>
+							<a href="https://docs.google.com/forms/d/e/1FAIpQLScyHzx3MsqMe6vsCe2y7Mh5QSB_-lcrh0l074-zStIh5hr57A/viewform"
+								target="_blank">
+								Adicione aqui la Precipitacion
+							</a>
+						</h4>
+					</a>
+				</div>
+
+				<div class="menu-item">
+					<a href="#"
+						onclick="showPasswordModalContabilidad(event)">
+						<i class="menu-item-icon fas fa-calculator"></i>
+						<h2>Contabilidad y P&G</h2>
+						<p></p>
+					</a>
+				</div>
+
+				<div class="menu-item">
+					<a href="local-or-remote.html"
+						target="_blank">
+						<i class="menu-item-icon fas fa-file-invoice-dollar"></i>
+						<h2>Sistema Admin PSA</h2>
+						<p></p>
+					</a>
+				</div>
+
+				<div class="menu-item">
+					<a href="https://app.powerbi.com/view?r=eyJrIjoiYjA5ZjBkNTUtYTYxNy00MThkLTliYzgtYjI5NGEwNGRjOGNlIiwidCI6Ijc0MmI3NWQ0LWU3YzItNDNkYy1hYzQ4LWVmMjQ1NDMwZjg2OSJ9"
+						target="_blank">
+						<i class="menu-item-icon fas fa-hard-hat"></i>
+						<h2>
+							Informes Graficos SST
+						</h2>
+						<p></p>
+					</a>
+				</div>
+
+				<div class="menu-item">
+					<a href="https://forms.gle/Cnbc6fnjaXBcffKx8"
+						target="_blank">
+						<i class="menu-item-icon fas fa-comment-dots"></i>
+						<h2>Registrar PQRSFC</h2>
+						<p></p>
+					</a>
+				</div>
+
+				<div class="menu-item">
+					<a href="#"
+						onclick="showPasswordModalPQRSFC(event)">
+						<i class="menu-item-icon fas fa-file-contract"></i>
+						<h2>Gestion PQRSFC</h2>
+						<p></p>
+					</a>
+				</div>
+
+				<div class="menu-item">
+					<a href="Evaluaciones/index.html"
+						target="_blank">
+						<i class="menu-item-icon fas fa-clipboard-check"></i>
+						<h2>Evaluaciones</h2>
+						<p></p>
+					</a>
+				</div>
+
+				<div class="menu-item">
+					<div class="menu-item-content">
+						<i class="menu-item-icon fas fa-file-alt"></i>
+						<h2>Documentacion</h2>
+						<p>Seleccione un documento:</p>
+						<select id="pdf-dropdown"
+							onchange="openSelectedPDF()">
+							<option value="">--Seleccionar--</option>
+						</select>
+					</div>
+				</div>
+			</div>
+
+			<footer>
+				<p class="motto">
+					"Trabajar en equipo con eficiencia y calidad son nuestros pilares. Recordemos siempre: Lo que no se mide, no se puede controlar ni mejorar"
+					</p>
+                <p class="motto">PPA Sembrando Futuro en Uraba
+                </p>
+				<p class="footer-text">
+					Creado por Jorge Hugo Pulgarin @ 2025 Todos los derechos reservados
+				</p>
+
+			</footer>
+		</div>
+
+		<div id="passwordModalContabilidad"
+			class="modal">
+			<div class="modal-content">
+				<h3>
+					Acceso Restringido - Contabilidad
+				</h3>
+				<input type="password"
+					id="passwordInputContabilidad"
+					placeholder="Ingrese su Password">
+				<div>
+					<button onclick="verifyPasswordContabilidad()">Acceder</button>
+					<button onclick="hideModal('passwordModalContabilidad')">Cancelar</button>
+				</div>
+			</div>
+		</div>
+
+		<div id="passwordModalPQRSFC"
+			class="modal">
+			<div class="modal-content">
+				<h3>
+					Acceso Restringido - PQRSFC
+				</h3>
+				<input type="password"
+					id="passwordInputPQRSFC"
+					placeholder="Ingrese su Password">
+				<div>
+					<button onclick="verifyPasswordPQRSFC()">Acceder</button>
+					<button onclick="hideModal('passwordModalPQRSFC')">Cancelar</button>
+				</div>
+			</div>
+		</div>
+
+		<script>
+			// Contraseñas
+        const correctPasswordContabilidad = "Contabilidad2025";
+        const correctPasswordPQRSFC = "SST2025";
+
+        // Funciones para Contabilidad
+        function showPasswordModalContabilidad(event) {
+            event.preventDefault();
+            document.getElementById("passwordModalContabilidad").style.display = "flex";
+        }
+
+        function verifyPasswordContabilidad() {
+            const input = document.getElementById("passwordInputContabilidad").value;
+            if (input === correctPasswordContabilidad) {
+                window.open("https://app.powerbi.com/view?r=eyJrIjoiMDNlM2Y1MjEtM2ZlZS00Y2YwLTgxNjUtYzQ3NTRiMTcyYzI2IiwidCI6Ijc0MmI3NWQ0LWU3YzItNDNkYy1hYzQ4LWVmMjQ1NDMwZjg2OSJ9", "_blank");
+                hideModal('passwordModalContabilidad');
+            } else {
+                alert("Contraseña incorrecta. Intente nuevamente.");
+            }
+        }
+
+        // Funciones para PQRSFC
+        function showPasswordModalPQRSFC(event) {
+            event.preventDefault();
+            document.getElementById("passwordModalPQRSFC").style.display = "flex";
+        }
+
+        function verifyPasswordPQRSFC() {
+            const input = document.getElementById("passwordInputPQRSFC").value;
+            if (input === correctPasswordPQRSFC) {
+                window.open("https://app.powerbi.com/view?r=eyJrIjoiODg2MDZmMzMtZGEyOC00YmNhLTk5NmItMTM4ZGNlNjE4ZmI3IiwidCI6Ijc0MmI3NWQ0LWU3YzItNDNkYy1hYzQ4LWVmMjQ1NDMwZjg2OSJ9", "_blank");
+                hideModal('passwordModalPQRSFC');
+            } else {
+                alert("Contraseña incorrecta. Intente nuevamente.");
+            }
+        }
+
+        // Funcion general para ocultar modales
+        function hideModal(modalId) {
+            document.getElementById(modalId).style.display = "none";
+            // Limpiar los campos de contraseña
+            if (modalId === 'passwordModalContabilidad') {
+                document.getElementById("passwordInputContabilidad").value = "";
+            } else if (modalId === 'passwordModalPQRSFC') {
+                document.getElementById("passwordInputPQRSFC").value = "";
+            }
+        }
+
+        // Nuevo script para la tarjeta de Proyectos y Politicas
+        document.addEventListener("DOMContentLoaded", function() {
+            listPDFs();
+        });
+
+        function listPDFs() {
+            // En un entorno de servidor, aqui es donde se haria una solicitud para obtener la lista de archivos.
+            // Para este ejemplo estatico, usaremos una lista de archivos predefinida.
+            const pdfFiles = [
+                "Proyecto-Evaluaciones-y-Reportes-Campo.pdf",
+                "Presentacion-Politicas-de-Seguridad.pdf",
+                "Politicas-Seguridad-Informacion-PPA.pdf",
+                "Contrato-Servicios-Tecnologicos.pdf",
+                "PPA-PRO-NMA-002-0125 (PROCEDIMIENTO-RECLAMOS-NOMINA-PQRSFC).pdf",
+                "PPA-PRO-NMA-003-0125 (PROCEDIMIENTO-DECUCCIONES-NOMINA).pdf",
+                "PPA-PRO-NMA-001-0125 (PROCEDIMIENTO-LIQUIDACION-DEFINITIVA-EMPLEADOS).pdf"
+
+            ];
+            const dropdown = document.getElementById("pdf-dropdown");
+
+            pdfFiles.forEach(file => {
+                const option = document.createElement("option");
+                option.value = "Evaluaciones/" + file;
+                option.text = file.replace(/-/g, " ").replace(/\.pdf$/, "").toUpperCase();
+                dropdown.add(option);
+            });
+        }
+
+        function openSelectedPDF() {
+            const dropdown = document.getElementById("pdf-dropdown");
+            const selectedFile = dropdown.value;
+            if (selectedFile) {
+                window.open(selectedFile, "_blank");
+            }
+        }
+		</script>
+	</body>
+</html>
